@@ -1,95 +1,151 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#10131c">
 <title>Para Takip</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#10131c;color:#f4f6fb;font-family:Arial,sans-serif;padding:18px 15px 90px}
-h1{margin:0 0 6px;font-size:26px}
-p{color:#a3abc0}
-.card{background:#191e2b;border:1px solid #30384b;border-radius:15px;padding:16px;margin:12px 0}
+body{margin:0;padding:18px 14px 90px;background:#10131c;color:#f4f6fb;font-family:Arial,sans-serif}
+h1{margin:0}h2{font-size:21px}h3{font-size:16px}
+.muted{color:#a3abc0;font-size:12px}
+.card{background:#191e2b;border:1px solid #30384b;border-radius:15px;padding:15px;margin:12px 0}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.label{font-size:12px;color:#a3abc0;margin-bottom:8px}
-.amount{font-size:21px;font-weight:bold;overflow-wrap:anywhere}
+.label{color:#a3abc0;font-size:12px;margin-bottom:7px}
+.amount{font-size:20px;font-weight:bold;overflow-wrap:anywhere}
 .green{color:#45d6a0}.red{color:#ff7082}.blue{color:#8da7ff}
 input,select,button,textarea{font:inherit;width:100%;padding:12px;border-radius:10px;border:1px solid #30384b;margin:5px 0;background:#101521;color:white}
 button{background:#8da7ff;color:#10131c;font-weight:bold;border:0}
-button.danger{background:#512632;color:#ffdbe0;width:auto;padding:7px 10px}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#191e2b;padding:8px;gap:5px}
-nav button{font-size:12px;margin:0;background:#252d40;color:white}
+button.secondary{background:#252d40;color:white}
+button.danger{background:#512632;color:#ffdbe0}
 .page{display:none}.page.active{display:block}
-.tx{display:flex;align-items:center;gap:8px;border-bottom:1px solid #30384b;padding:12px 0}
-.txinfo{flex:1;min-width:0}.txinfo small{display:block;color:#a3abc0;margin-top:5px}
-.txright{text-align:right}.txright strong{display:block}
-.progress{height:8px;background:#30384b;border-radius:8px;overflow:hidden;margin:12px 0}
+.tx{display:flex;gap:9px;align-items:center;border-bottom:1px solid #30384b;padding:12px 0}
+.txinfo{flex:1;min-width:0}.txinfo small{display:block;color:#a3abc0;margin-top:5px;overflow-wrap:anywhere}
+.txright{text-align:right}.txright strong{display:block;overflow-wrap:anywhere}
+.txright button{width:auto;padding:7px 10px;font-size:12px}
+.monthbox{background:#191e2b;border:1px solid #30384b;border-radius:14px;padding:14px;margin:10px 0}
+.monthtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.monthtop strong{font-size:16px}
+.monthbox .grid{margin-top:12px}
+.monthbox button{margin-top:10px}
+.progress{height:8px;background:#30384b;border-radius:8px;overflow:hidden;margin:10px 0}
 .progress div{height:100%;background:#45d6a0}
-small{overflow-wrap:anywhere}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;gap:6px;background:#191e2b;padding:8px}
+nav button{background:#252d40;color:white;margin:0;font-size:12px}
+.overlay{position:fixed;inset:0;background:#000b;z-index:20;display:none;align-items:center;justify-content:center;padding:20px}
+.dialog{background:#191e2b;border:1px solid #46506a;border-radius:16px;padding:20px;width:100%;max-width:380px}
+.dialog p{line-height:1.5}
+.empty{color:#a3abc0;text-align:center;padding:18px}
 </style>
 </head>
 <body>
-<header><h1>Para Takip</h1><p>Gelirlerini, giderlerini ve bütçeni yönet.</p></header>
+
+<header>
+<h1>Para Takip</h1>
+<p class="muted">Gelirlerini, giderlerini ve bütçeni yönet.</p>
+</header>
 
 <section id="home" class="page active">
 <h2>Genel durum</h2>
 <div class="grid">
-<div class="card"><div class="label">TL bakiyesi</div><div id="balance" class="amount">₺0,00</div></div>
-<div class="card"><div class="label">Euro bakiyesi</div><div id="euroBalance" class="amount blue">€0,00</div></div>
-<div class="card"><div class="label">Bu ay gelir</div><div id="income" class="amount green">₺0,00</div></div>
-<div class="card"><div class="label">Bu ay gider</div><div id="expense" class="amount red">₺0,00</div></div>
+<div class="card"><div class="label">TL bakiyesi</div><div id="balance" class="amount">₺0</div></div>
+<div class="card"><div class="label">Euro bakiyesi</div><div id="euroBalance" class="amount blue">€0</div></div>
+<div class="card"><div class="label">Bu ay gelir</div><div id="income" class="amount green">₺0</div></div>
+<div class="card"><div class="label">Bu ay gider</div><div id="expense" class="amount red">₺0</div></div>
 </div>
-<div class="card"><div class="label">Bu ay net</div><div id="net" class="amount">₺0,00</div></div>
-<div class="card"><h3>Son işlemler</h3><div id="recent"></div></div>
-<div class="card"><h3>Aylık bütçe</h3><div id="budgetText">Bütçe belirlenmedi.</div><div class="progress"><div id="progress" style="width:0%"></div></div></div>
+<div class="card">
+<h3>Aylık bütçe</h3>
+<div id="budgetText" class="muted">Bütçe belirlenmedi.</div>
+<div class="progress"><div id="progress" style="width:0%"></div></div>
+</div>
+<div class="card">
+<h3>Son işlemler</h3>
+<div id="recent"></div>
+</div>
 </section>
 
 <section id="transactions" class="page">
 <h2>İşlemler</h2>
 <div class="card">
-<h3>Yeni işlem</h3>
+<h3>Yeni işlem ekle</h3>
 <form id="txForm">
-<label>İşlem türü</label>
+<label class="muted">İşlem türü</label>
 <select id="type"><option value="expense">Gider</option><option value="income">Gelir</option></select>
-<label>Para birimi</label>
+<label class="muted">Para birimi</label>
 <select id="currency"><option value="TRY">Türk lirası</option><option value="EUR">Euro</option></select>
-<label>Tutar</label>
-<input id="amount" type="number" min="0.01" step="0.01" placeholder="Tutar" required>
-<label>Kategori</label>
-<select id="category"><option>Yemek</option><option>Market</option><option>Kira</option><option>Ulaşım</option><option>Fatura</option><option>Maaş</option><option>Ek gelir</option><option>Alışveriş</option><option>Motor</option><option>Eğlence</option><option>Diğer</option></select>
-<label>Tarih</label>
+<label class="muted">Tutar</label>
+<input id="amount" type="number" min="0.01" step="0.01" required placeholder="Tutar">
+<label class="muted">Kategori</label>
+<select id="category">
+<option>Yemek</option><option>Market</option><option>Kira</option>
+<option>Ulaşım</option><option>Fatura</option><option>Maaş</option>
+<option>Ek gelir</option><option>Alışveriş</option><option>Motor</option>
+<option>Eğlence</option><option>Sağlık</option><option>Diğer</option>
+</select>
+<label class="muted">Tarih</label>
 <input id="date" type="date" required>
-<label>Açıklama</label>
-<input id="note" maxlength="120" placeholder="İsteğe bağlı açıklama">
+<label class="muted">Açıklama</label>
+<input id="note" maxlength="120" placeholder="İsteğe bağlı">
 <button type="submit">İşlemi kaydet</button>
 </form>
 </div>
-<div class="card"><h3>İşlem geçmişi</h3><select id="filter"><option value="all">Tüm işlemler</option><option value="income">Gelirler</option><option value="expense">Giderler</option></select><div id="history"></div></div>
+
+<div class="card">
+<h3>Aylara göre gelir ve gider</h3>
+<p class="muted">Her ay ayrı bir kutuda gösterilir. Bir aya basarak işlemlerini görüntüleyebilirsin.</p>
+<div id="months"></div>
+</div>
+
+<div class="card" id="monthDetails" style="display:none">
+<div class="monthtop"><h3 id="detailTitle">Ayın işlemleri</h3><button type="button" id="closeDetails" class="secondary" style="width:auto">Kapat</button></div>
+<div id="detailSummary"></div>
+<div id="detailList"></div>
+</div>
+
+<div class="card">
+<h3>Tüm işlem geçmişi</h3>
+<select id="filter">
+<option value="all">Tüm işlemler</option>
+<option value="income">Sadece gelir</option>
+<option value="expense">Sadece gider</option>
+</select>
+<div id="history"></div>
+</div>
 </section>
 
 <section id="settings" class="page">
 <h2>Ayarlar</h2>
 <div class="card">
 <h3>Euro kuru</h3>
-<label>1 Euro kaç TL?</label>
+<label class="muted">1 Euro kaç TL?</label>
 <input id="rate" type="number" min="0.01" step="0.01">
 <button id="saveRate">Kuru kaydet</button>
 </div>
 <div class="card">
 <h3>Aylık bütçe</h3>
-<label>Bütçe (TL)</label>
+<label class="muted">Aylık bütçe (TL)</label>
 <input id="budget" type="number" min="0" step="0.01">
 <button id="saveBudget">Bütçeyi kaydet</button>
 </div>
 <div class="card">
-<h3>Yedekleme</h3>
+<h3>Veri yedekleme</h3>
 <button id="backup">Yedek oluştur</button>
 <textarea id="backupData" rows="6" placeholder="Yedek burada görünür"></textarea>
 <button id="restore">Yedeği geri yükle</button>
 </div>
 </section>
+
+<div id="deleteOverlay" class="overlay">
+<div class="dialog">
+<h3>İşlemi sil</h3>
+<p>Bu işlem kalıcı olarak silinsin mi?</p>
+<div class="grid">
+<button type="button" class="secondary" id="cancelDelete">Vazgeç</button>
+<button type="button" class="danger" id="confirmDelete">Evet, sil</button>
+</div>
+</div>
+</div>
 
 <nav>
 <button data-page="home">Ana Sayfa</button>
@@ -107,12 +163,14 @@ const BUDGET="paraTakipMonthlyBudgetV1";
 let records=[];
 let rate=55;
 let budget=0;
+let pendingDelete=null;
+let selectedMonth=null;
 
 function today(){
  const d=new Date();
  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
-function month(){return today().slice(0,7);}
+function currentMonth(){return today().slice(0,7)}
 function money(n,c="TRY"){
  return new Intl.NumberFormat("tr-TR",{style:"currency",currency:c,minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(n)||0);
 }
@@ -120,99 +178,219 @@ function esc(s){
  return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 }
 function normalize(r){
- return {...r,id:r.id||("id_"+Date.now()+"_"+Math.random()),type:r.type==="income"?"income":"expense",amount:Number(r.amount)||0,currency:r.currency==="EUR"?"EUR":"TRY",category:String(r.category||"Diğer"),date:/^\d{4}-\d{2}-\d{2}$/.test(r.date||"")?r.date:today(),note:String(r.note||"")};
+ return {
+  ...r,
+  id:String(r.id||("id_"+Date.now()+"_"+Math.random().toString(36).slice(2))),
+  type:r.type==="income"?"income":"expense",
+  amount:Number(r.amount)||0,
+  currency:r.currency==="EUR"?"EUR":"TRY",
+  category:String(r.category||"Diğer"),
+  date:/^\d{4}-\d{2}-\d{2}$/.test(r.date||"")?r.date:today(),
+  note:String(r.note||"")
+ };
 }
 function load(){
  try{
-  let data=JSON.parse(localStorage.getItem(KEY)||"[]");
+  const data=JSON.parse(localStorage.getItem(KEY)||"[]");
   records=Array.isArray(data)?data.filter(r=>r&&typeof r==="object").map(normalize):[];
- }catch(e){records=[];}
+ }catch(e){
+  records=[];
+  alert("Kayıtlar okunamadı. Yedeğin varsa geri yükleyebilirsin.");
+ }
 }
 function save(){
- try{localStorage.setItem(KEY,JSON.stringify(records));return true;}
- catch(e){alert("Kayıt kaydedilemedi. Depolama alanını kontrol et.");return false;}
+ try{
+  localStorage.setItem(KEY,JSON.stringify(records));
+  return true;
+ }catch(e){
+  alert("Kayıt kaydedilemedi. Depolama alanını kontrol et.");
+  return false;
+ }
 }
-function tl(r){
- if(r.currency==="EUR")return r.amount*rate;
- return r.amount;
-}
-function total(list,type){
- return list.filter(r=>r.type===type).reduce((s,r)=>s+tl(r),0);
-}
+function tl(r){return r.currency==="EUR"?r.amount*rate:r.amount}
+function sum(list,type){return list.filter(r=>r.type===type).reduce((s,r)=>s+tl(r),0)}
 function euroBalance(){
  return records.filter(r=>r.currency==="EUR").reduce((s,r)=>s+(r.type==="income"?r.amount:-r.amount),0);
 }
-function txHtml(r,del){
- let income=r.type==="income";
- return '<div class="tx"><div class="txinfo"><strong>'+esc(r.category)+'</strong><small>'+esc(r.date)+(r.note?" · "+esc(r.note):"")+'</small></div><div class="txright"><strong class="'+(income?"green":"red")+'">'+(income?"+":"−")+money(r.amount,r.currency)+'</strong><small>'+money(tl(r))+'</small>'+(del?'<br><button type="button" class="danger" data-delete="'+esc(r.id)+'">Sil</button>':"")+'</div></div>';
+function monthRecords(m){return records.filter(r=>(r.date||"").slice(0,7)===m)}
+function monthName(m){
+ const parts=m.split("-").map(Number);
+ return new Date(parts[0],parts[1]-1,1).toLocaleDateString("tr-TR",{month:"long",year:"numeric"});
 }
-function listHtml(list,del,limit){
- let sorted=[...list].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
- if(limit)sorted=sorted.slice(0,limit);
- return sorted.length?sorted.map(r=>txHtml(r,del)).join(""):'<p>Henüz işlem yok.</p>';
+function txHtml(r){
+ const income=r.type==="income";
+ return `<div class="tx">
+ <div class="txinfo"><strong>${esc(r.category)}</strong>
+ <small>${esc(r.date)}${r.note?" · "+esc(r.note):""}</small></div>
+ <div class="txright">
+ <strong class="${income?"green":"red"}">${income?"+":"−"}${money(r.amount,r.currency)}</strong>
+ <small class="muted">${money(tl(r))}</small>
+ <br><button type="button" class="danger" data-delete="${esc(r.id)}">Sil</button>
+ </div></div>`;
 }
-function render(){
- let m=records.filter(r=>r.date.slice(0,7)===month());
- let inc=total(m,"income"),exp=total(m,"expense");
- $("balance").textContent=money(records.reduce((s,r)=>s+(r.type==="income"?tl(r):-tl(r)),0));
+function sorted(list){
+ return [...list].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+}
+function renderList(list){
+ return list.length?sorted(list).map(txHtml).join(""):'<div class="empty">Henüz işlem yok.</div>';
+}
+function renderHome(){
+ const balance=records.reduce((s,r)=>s+(r.type==="income"?tl(r):-tl(r)),0);
+ const m=monthRecords(currentMonth());
+ const inc=sum(m,"income"),exp=sum(m,"expense");
+ $("balance").textContent=money(balance);
  $("euroBalance").textContent=money(euroBalance(),"EUR");
  $("income").textContent=money(inc);
  $("expense").textContent=money(exp);
- $("net").textContent=money(inc-exp);
- $("net").className="amount "+(inc>=exp?"green":"red");
- $("recent").innerHTML=listHtml(records,false,5);
- $("history").innerHTML=listHtml(records.filter(r=>$("filter").value==="all"||r.type===$("filter").value),true);
+ $("recent").innerHTML=records.length?sorted(records).slice(0,5).map(txHtml).join(""):'<div class="empty">Henüz işlem yok.</div>';
  $("budgetText").textContent=budget>0?"Harcanan: "+money(exp)+" / "+money(budget):"Bütçe belirlenmedi.";
  $("progress").style.width=(budget>0?Math.min(100,exp/budget*100):0)+"%";
  $("progress").style.background=budget>0&&exp>budget?"#ff7082":"#45d6a0";
 }
+function renderMonths(){
+ const months=[...new Set(records.map(r=>(r.date||"").slice(0,7)).filter(m=>/^\d{4}-\d{2}$/.test(m)))];
+ if(!months.includes(currentMonth()))months.push(currentMonth());
+ months.sort((a,b)=>b.localeCompare(a));
+ $("months").innerHTML=months.map(m=>{
+  const list=monthRecords(m);
+  const inc=sum(list,"income"),exp=sum(list,"expense");
+  return `<div class="monthbox">
+  <div class="monthtop"><strong>${esc(monthName(m))}</strong><span class="muted">${list.length} işlem</span></div>
+  <div class="grid">
+  <div><div class="label">Gelir</div><div class="amount green">${money(inc)}</div></div>
+  <div><div class="label">Gider</div><div class="amount red">${money(exp)}</div></div>
+  <div style="grid-column:1/-1"><div class="label">Net fark</div><div class="amount ${inc-exp>=0?"green":"red"}">${money(inc-exp)}</div></div>
+  </div>
+  <button type="button" class="secondary" data-month="${m}">Bu ayın işlemlerini gör</button>
+  </div>`;
+ }).join("");
+}
+function openMonth(m){
+ selectedMonth=m;
+ const list=sorted(monthRecords(m));
+ const inc=sum(list,"income"),exp=sum(list,"expense");
+ $("detailTitle").textContent=monthName(m);
+ $("detailSummary").innerHTML=`<div class="grid">
+ <div><div class="label">Gelir</div><div class="amount green">${money(inc)}</div></div>
+ <div><div class="label">Gider</div><div class="amount red">${money(exp)}</div></div>
+ <div style="grid-column:1/-1"><div class="label">Net fark</div><div class="amount ${inc-exp>=0?"green":"red"}">${money(inc-exp)}</div></div>
+ </div>`;
+ $("detailList").innerHTML=renderList(list);
+ $("monthDetails").style.display="block";
+ $("monthDetails").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function renderHistory(){
+ const f=$("filter").value;
+ $("history").innerHTML=renderList(records.filter(r=>f==="all"||r.type===f));
+}
+function render(){
+ renderHome();
+ renderMonths();
+ renderHistory();
+ if(selectedMonth&&$("monthDetails").style.display!=="none")openMonth(selectedMonth);
+}
 function showPage(id){
  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+ window.scrollTo(0,0);
 }
 document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
-
 $("date").value=today();
+
 $("txForm").addEventListener("submit",e=>{
  e.preventDefault();
- let amount=Number($("amount").value);
+ const amount=Number($("amount").value);
  if(!Number.isFinite(amount)||amount<=0){alert("Geçerli bir tutar gir.");return;}
- records.unshift(normalize({id:"id_"+Date.now()+"_"+Math.random(),type:$("type").value,currency:$("currency").value,amount,category:$("category").value,date:$("date").value||today(),note:$("note").value.trim()}));
+ records.unshift(normalize({
+  id:"id_"+Date.now()+"_"+Math.random().toString(36).slice(2),
+  type:$("type").value,
+  currency:$("currency").value,
+  amount,
+  category:$("category").value,
+  date:$("date").value||today(),
+  note:$("note").value.trim()
+ }));
  if(save()){
   $("amount").value="";
   $("note").value="";
+  $("date").value=today();
   render();
   alert("İşlem kaydedildi.");
  }
 });
 
-/* Sil butonu için tek ve ortak olay dinleyicisi */
-document.addEventListener("click",function(e){
- const button=e.target.closest("[data-delete]");
- if(!button)return;
- e.preventDefault();
- const id=button.getAttribute("data-delete");
- if(!confirm("Bu işlemi silmek istiyor musun?"))return;
+/* Sil butonu: tarayıcı confirm penceresi kullanmaz. */
+document.addEventListener("click",e=>{
+ const del=e.target.closest("[data-delete]");
+ if(del){
+  e.preventDefault();
+  pendingDelete=del.getAttribute("data-delete");
+  $("deleteOverlay").style.display="flex";
+  return;
+ }
+ const monthButton=e.target.closest("[data-month]");
+ if(monthButton)openMonth(monthButton.getAttribute("data-month"));
+});
+$("cancelDelete").addEventListener("click",()=>{
+ pendingDelete=null;
+ $("deleteOverlay").style.display="none";
+});
+$("confirmDelete").addEventListener("click",()=>{
+ if(pendingDelete===null)return;
  const old=records;
- records=records.filter(r=>String(r.id)!==String(id));
- if(records.length===old.length){alert("İşlem bulunamadı.");return;}
- if(save()){render();}
- else{records=old;render();}
+ const id=pendingDelete;
+ const next=records.filter(r=>String(r.id)!==String(id));
+ if(next.length===records.length){
+  $("deleteOverlay").style.display="none";
+  pendingDelete=null;
+  alert("İşlem bulunamadı. Sayfayı yenileyip tekrar dene.");
+  return;
+ }
+ records=next;
+ if(save()){
+  if(selectedMonth&& !monthRecords(selectedMonth).length){
+   $("monthDetails").style.display="none";
+   selectedMonth=null;
+  }
+  render();
+  $("deleteOverlay").style.display="none";
+  pendingDelete=null;
+ }else{
+  records=old;
+  render();
+ }
+});
+$("deleteOverlay").addEventListener("click",e=>{
+ if(e.target===$("deleteOverlay")){
+  pendingDelete=null;
+  $("deleteOverlay").style.display="none";
+ }
 });
 
-$("filter").addEventListener("change",render);
+$("closeDetails").addEventListener("click",()=>{
+ $("monthDetails").style.display="none";
+ selectedMonth=null;
+});
+$("filter").addEventListener("change",renderHistory);
+
 $("saveRate").addEventListener("click",()=>{
- let v=Number($("rate").value);
+ const v=Number($("rate").value);
  if(!Number.isFinite(v)||v<=0){alert("Geçerli bir euro kuru gir.");return;}
- rate=v;
- try{localStorage.setItem(RATE,String(rate));render();alert("Kur kaydedildi.");}
- catch(e){alert("Kur kaydedilemedi.");}
+ try{
+  localStorage.setItem(RATE,String(v));
+  rate=v;
+  render();
+  alert("Euro kuru kaydedildi.");
+ }catch(e){alert("Kur kaydedilemedi.");}
 });
 $("saveBudget").addEventListener("click",()=>{
- let v=Number($("budget").value);
+ const v=Number($("budget").value);
  if(!Number.isFinite(v)||v<0){alert("Geçerli bir bütçe gir.");return;}
- budget=v;
- try{localStorage.setItem(BUDGET,String(budget));render();alert("Bütçe kaydedildi.");}
- catch(e){alert("Bütçe kaydedilemedi.");}
+ try{
+  localStorage.setItem(BUDGET,String(v));
+  budget=v;
+  render();
+  alert("Bütçe kaydedildi.");
+ }catch(e){alert("Bütçe kaydedilemedi.");}
 });
 $("backup").addEventListener("click",()=>{
  $("backupData").value=JSON.stringify({records,rate,budget},null,2);
@@ -220,28 +398,35 @@ $("backup").addEventListener("click",()=>{
 $("restore").addEventListener("click",()=>{
  let data;
  try{data=JSON.parse($("backupData").value);}
- catch(e){alert("Yedek dosyası geçersiz.");return;}
+ catch(e){alert("Yedek JSON formatında değil.");return;}
  if(!data||!Array.isArray(data.records)){alert("Yedekte işlem listesi bulunamadı.");return;}
- if(!confirm("Mevcut işlemlerin yerine yedek yüklenecek. Devam edilsin mi?"))return;
- let old=records;
+ if(!confirm("Mevcut kayıtların yerine yedek yüklenecek. Devam edilsin mi?"))return;
+ const oldRecords=records,oldRate=rate,oldBudget=budget;
  records=data.records.filter(r=>r&&typeof r==="object").map(normalize);
- let newRate=Number(data.rate),newBudget=Number(data.budget);
- if(newRate>0)rate=newRate;
- if(newBudget>=0)budget=newBudget;
+ if(Number(data.rate)>0)rate=Number(data.rate);
+ if(Number(data.budget)>=0)budget=Number(data.budget);
  try{
   localStorage.setItem(KEY,JSON.stringify(records));
   localStorage.setItem(RATE,String(rate));
   localStorage.setItem(BUDGET,String(budget));
-  $("rate").value=rate;$("budget").value=budget;
-  render();alert("Yedek geri yüklendi.");
- }catch(e){records=old;render();alert("Yedek yüklenemedi.");}
+  $("rate").value=rate;
+  $("budget").value=budget||"";
+  selectedMonth=null;
+  $("monthDetails").style.display="none";
+  render();
+  alert("Yedek geri yüklendi.");
+ }catch(e){
+  records=oldRecords;rate=oldRate;budget=oldBudget;
+  render();
+  alert("Yedek yüklenemedi.");
+ }
 });
 
 try{
  const r=Number(localStorage.getItem(RATE));
  if(r>0)rate=r;
- const b=Number(localStorage.getItem(BUDGET));
- if(b>=0&&localStorage.getItem(BUDGET)!==null)budget=b;
+ const b=localStorage.getItem(BUDGET);
+ if(b!==null&&Number(b)>=0)budget=Number(b);
 }catch(e){}
 $("rate").value=rate;
 $("budget").value=budget||"";
