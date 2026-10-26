@@ -25,12 +25,10 @@ jobs:
           java-version: '17'
 
       - name: Android SDK kur
-        uses: android-actions/setup-android@v3
-        with:
-          packages: |
-            platform-tools
-            platforms;android-35
-            build-tools;35.0.0
+        uses: android-actions/setup-android@v4
+
+      - name: Gerekli Android paketlerini kur
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Gradle kur
         uses: gradle/actions/setup-gradle@v4
