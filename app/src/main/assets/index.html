@@ -4,167 +4,314 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101827">
-<meta name="description" content="TL ve Euro gelir-gider takibi">
+<meta name="theme-color" content="#0b1220">
 <title>Para Takip</title>
 <style>
-:root{--bg:#0b1220;--panel:#121d30;--text:#eef4ff;--muted:#9aabc5;--line:#2a3952;--green:#48d6a0;--red:#ff7b87;--blue:#84aaff}
+:root{
+  --bg:#0b1220;--panel:#121d30;--panel2:#0e192a;
+  --text:#eef4ff;--muted:#9aabc5;--line:#2a3952;
+  --green:#48d6a0;--red:#ff7b87;--blue:#84aaff;--gold:#f6c76b;
+}
 *{box-sizing:border-box}
-body{margin:0;background:linear-gradient(145deg,#0b1220,#101a2c 60%,#0b1220);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif}
-main{max-width:1050px;margin:auto;padding:24px 16px 50px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+body{margin:0;background:var(--bg);color:var(--text);font:15px system-ui,sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+header{padding:20px 16px 0;max-width:1100px;margin:auto}
 .brand{display:flex;align-items:center;gap:12px}
-.logo{width:46px;height:46px;display:grid;place-items:center;background:#233a58;border-radius:14px;font-size:23px}
-.sub{color:var(--muted);font-size:13px;margin-top:3px}
+.logo{width:45px;height:45px;display:grid;place-items:center;background:#233a58;border-radius:14px;font-size:24px}
 h1{font-size:23px;margin:0}
-h2{font-size:16px;margin:0 0 15px}
-.btn{border:0;border-radius:11px;padding:11px 14px;background:var(--green);color:#082218;font-weight:750;cursor:pointer}
-.btn.secondary{background:#23334d;color:var(--text);border:1px solid var(--line)}
+h2{font-size:17px;margin:0 0 15px}
+h3{font-size:14px;margin:0 0 12px}
+.sub,.muted,.small{color:var(--muted)}
+.sub{font-size:12px;margin-top:3px}
+.small{font-size:12px;line-height:1.6}
+main{max-width:1100px;margin:auto;padding:18px 16px 45px}
+nav{display:flex;gap:8px;overflow-x:auto;margin:20px 0 17px;padding-bottom:3px}
+.navbtn{flex:1;min-width:110px;padding:12px 10px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--muted);font-weight:700}
+.navbtn.active{background:var(--green);border-color:var(--green);color:#082218}
+.page{display:none}
+.page.active{display:block}
 .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
-.card{background:rgba(18,29,48,.94);border:1px solid var(--line);border-radius:17px;padding:17px;min-width:0}
-.statlabel{color:var(--muted);font-size:12px;margin-bottom:10px}
-.stat{font-size:clamp(19px,2.8vw,26px);font-weight:800;letter-spacing:-.5px;overflow-wrap:anywhere}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:17px;min-width:0}
+.section{margin-top:14px}
+.columns{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.statlabel{font-size:12px;color:var(--muted);margin-bottom:9px}
+.stat{font-size:clamp(20px,3vw,28px);font-weight:800;overflow-wrap:anywhere}
 .positive{color:var(--green)}
 .negative{color:var(--red)}
-.muted{color:var(--muted)}
-.section{margin-top:16px}
-.columns{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.gold{color:var(--gold)}
+.currencygrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.currencybox{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:13px}
+.currencybox strong{display:block;font-size:20px;margin-top:6px;overflow-wrap:anywhere}
 .formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
 label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}
-input,select{width:100%;background:#0c1627;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;outline:none}
+input,select{width:100%;padding:12px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);outline:none}
 input:focus,select:focus{border-color:var(--blue)}
 .wide{grid-column:1/-1}
-.formactions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
-.small{font-size:12px;color:var(--muted);line-height:1.5}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}
+.btn{border:0;border-radius:10px;padding:11px 14px;background:var(--green);color:#082218;font-weight:750}
+.btn.secondary{background:#23334d;color:var(--text);border:1px solid var(--line)}
+.btn.danger{background:#4b202d;color:#ffdce0;border:1px solid #753543}
+.btn:disabled{opacity:.45;cursor:not-allowed}
 .transactions{display:flex;flex-direction:column;gap:9px}
-.tx{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px;background:#0e192a;border:1px solid #25344a;border-radius:12px}
-.txleft{display:flex;gap:11px;align-items:center;min-width:0}
-.bubble{width:38px;height:38px;display:grid;place-items:center;background:#21314a;border-radius:12px;flex-shrink:0}
-.txname{font-weight:650;overflow-wrap:anywhere}
-.txmeta{font-size:12px;color:var(--muted);margin-top:3px}
-.amount{font-weight:800;white-space:nowrap}
-.delete{background:transparent;border:1px solid var(--line);color:var(--muted);border-radius:8px;padding:6px 10px;cursor:pointer;margin-left:7px;font-size:16px}
-.delete:hover{background:#4b202d;color:#fff}
-.barrow{margin:13px 0}
-.barlabel{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin-bottom:7px}
-.track{height:8px;background:#26344a;border-radius:20px;overflow:hidden}
-.fill{height:100%;background:linear-gradient(90deg,#69a4ff,#48d6a0);border-radius:20px}
+.tx{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px;background:var(--panel2);border:1px solid #25344a;border-radius:12px}
+.txleft{display:flex;align-items:center;gap:10px;min-width:0}
+.bubble{width:36px;height:36px;flex-shrink:0;display:grid;place-items:center;background:#21314a;border-radius:11px}
+.txname{font-weight:700;overflow-wrap:anywhere}
+.txmeta{font-size:11px;color:var(--muted);margin-top:4px}
+.amount{font-weight:800;white-space:nowrap;text-align:right}
+.delete{display:block;margin-top:5px;margin-left:auto;padding:5px 9px;border:1px solid #633341;border-radius:7px;background:#351d29;color:#ffb4bd;font-size:12px}
 .empty{text-align:center;color:var(--muted);padding:22px 8px}
-.footer{margin-top:17px;color:var(--muted);font-size:11px;text-align:center}
-hr{border:0;border-top:1px solid var(--line);margin:18px 0}
-@media(max-width:720px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.columns{grid-template-columns:1fr}.stat{font-size:22px}}
-@media(max-width:380px){.formgrid{grid-template-columns:1fr}.wide{grid-column:auto}.card{padding:13px}}
+.divider{height:1px;background:var(--line);margin:17px 0}
+.barrow{margin:13px 0}
+.barlabel{display:flex;justify-content:space-between;gap:10px;font-size:12px;margin-bottom:6px}
+.track{height:9px;background:#26344a;border-radius:20px;overflow:hidden}
+.fill{height:100%;border-radius:20px;background:var(--blue)}
+.monthlist{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.monthbtn{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text)}
+.monthbtn.active{border-color:var(--green);background:#16372f}
+.chart{display:flex;align-items:flex-end;gap:8px;height:200px;padding:12px 4px 0;border-bottom:1px solid var(--line)}
+.chartcol{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px}
+.chartbars{height:160px;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:4px}
+.chartbar{width:min(30px,40%);min-height:2px;border-radius:5px 5px 0 0}
+.chartbar.income{background:var(--green)}
+.chartbar.expense{background:var(--red)}
+.chartlabel{font-size:10px;color:var(--muted);text-align:center;white-space:nowrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:12px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px}
+.donutrow{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.donut{width:160px;height:160px;border-radius:50%;flex-shrink:0;position:relative;display:grid;place-items:center}
+.donut::after{content:"";position:absolute;width:94px;height:94px;border-radius:50%;background:var(--panel)}
+.donutcenter{z-index:1;text-align:center;max-width:88px;font-size:12px;color:var(--muted)}
+.donutcenter strong{display:block;font-size:14px;color:var(--text);overflow-wrap:anywhere}
+.donutlegend{flex:1;min-width:140px}
+.donutitem{display:flex;justify-content:space-between;gap:8px;font-size:12px;margin:10px 0}
+.donutitem span:first-child{overflow-wrap:anywhere}
+.ratefield{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.note{padding:12px;border:1px solid var(--line);background:var(--panel2);border-radius:10px}
+.footer{text-align:center;color:var(--muted);font-size:11px;margin-top:20px}
+@media(max-width:760px){
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .columns{grid-template-columns:1fr}
+ .stat{font-size:22px}
+}
+@media(max-width:420px){
+ main{padding-left:10px;padding-right:10px}
+ .card{padding:13px}
+ .currencygrid{gap:6px}
+ .currencybox{padding:9px}
+ .currencybox strong{font-size:16px}
+ .formgrid{grid-template-columns:1fr}
+ .wide{grid-column:auto}
+ .tx{padding:9px}
+ .amount{font-size:12px}
+ .donut{width:135px;height:135px}
+ .donut::after{width:80px;height:80px}
+}
 </style>
 </head>
 <body>
-<main>
-<header class="top">
+<header>
   <div class="brand">
     <div class="logo">₺</div>
     <div>
       <h1>Para Takip</h1>
-      <div class="sub">Gelirini, giderini ve birikimini tek yerde gör</div>
+      <div class="sub">Gelirini, giderini ve bakiyeni yönet</div>
     </div>
   </div>
-  <button class="btn secondary" id="exportBtn" type="button">Dışa aktar CSV</button>
+  <nav>
+    <button class="navbtn active" data-page="home">🏠 Ana Sayfa</button>
+    <button class="navbtn" data-page="reports">📊 Aylık Rapor</button>
+    <button class="navbtn" data-page="settings">💱 Kur ve Ayarlar</button>
+  </nav>
 </header>
 
-<section class="grid" aria-label="Bakiye özeti">
-  <div class="card">
-    <div class="statlabel">Toplam bakiye (TL)</div>
-    <div class="stat" id="tlBalance">₺0,00</div>
-    <div class="small">TL ve Euro bakiyelerinin toplam TL karşılığı</div>
-  </div>
-  <div class="card">
-    <div class="statlabel">Toplam bakiye (Euro)</div>
-    <div class="stat" id="eurBalance">€0,00</div>
-    <div class="small">Toplam bakiyenin Euro karşılığı</div>
-  </div>
-  <div class="card">
-    <div class="statlabel">Toplam gelir</div>
-    <div class="stat positive" id="incomeTotal">₺0,00</div>
-    <div class="small" id="incomeSub">Euro geliri: €0,00</div>
-  </div>
-  <div class="card">
-    <div class="statlabel">Toplam gider</div>
-    <div class="stat negative" id="expenseTotal">₺0,00</div>
-    <div class="small" id="expenseSub">Euro gideri: €0,00</div>
-  </div>
-</section>
-
-<section class="columns section">
-  <div class="card">
-    <h2>＋ Yeni işlem ekle</h2>
-    <form id="txForm">
-      <div class="formgrid">
-        <div>
-          <label for="type">İşlem türü</label>
-          <select id="type">
-            <option value="expense">Gider</option>
-            <option value="income">Gelir</option>
-          </select>
-        </div>
-        <div>
-          <label for="currency">Para birimi</label>
-          <select id="currency">
-            <option value="TRY">Türk lirası (TL)</option>
-            <option value="EUR">Euro (€)</option>
-          </select>
-        </div>
-        <div>
-          <label for="amount">Tutar</label>
-          <input id="amount" type="number" min="0.01" step="0.01" placeholder="Örn. 250" required>
-        </div>
-        <div>
-          <label for="category">Kategori</label>
-          <select id="category"></select>
-        </div>
-        <div class="wide">
-          <label for="description">Açıklama</label>
-          <input id="description" maxlength="100" placeholder="Örn. maaş, kira, market">
-        </div>
-        <div>
-          <label for="date">Tarih</label>
-          <input id="date" type="date" required>
-        </div>
-      </div>
-      <div class="formactions">
-        <button class="btn" type="submit">İşlemi kaydet</button>
-        <button class="btn secondary" type="reset">Temizle</button>
-      </div>
-      <p class="small">Kayıtlar bu cihazın tarayıcısında tutulur. Banka hesabına bağlanmaz.</p>
-    </form>
-  </div>
-
-  <div class="card">
-    <h2>€ Euro kuru</h2>
-    <div class="stat positive">1 EUR = 55,00 TL</div>
-    <p class="small">Euro tutarları tüm özetlerde otomatik olarak 55 TL üzerinden hesaplanır. Bu sabit kur örnektir; güncel piyasa kuru olmayabilir.</p>
-    <div class="section">
-      <div class="statlabel">Toplam bakiye (TL karşılığı)</div>
-      <div class="stat" id="combined">₺0,00</div>
-      <div class="small">Euro bakiyen de bu toplamın içindedir.</div>
+<main>
+<!-- SAYFA 1 -->
+<section class="page active" id="home">
+  <div class="grid">
+    <div class="card">
+      <div class="statlabel">Toplam net bakiye (TL)</div>
+      <div class="stat" id="balanceTL">₺0,00</div>
+      <div class="small">Tüm para birimlerinin TL karşılığı</div>
     </div>
-    <hr>
-    <div class="statlabel">Bu ayın net durumu (TL)</div>
-    <div class="stat" id="monthNet">₺0,00</div>
-    <div class="small">Bu ayki gelir − gider</div>
+    <div class="card">
+      <div class="statlabel">Toplam gelir (TL)</div>
+      <div class="stat positive" id="incomeTL">₺0,00</div>
+      <div class="small">Bütün gelir kayıtları</div>
+    </div>
+    <div class="card">
+      <div class="statlabel">Toplam gider (TL)</div>
+      <div class="stat negative" id="expenseTL">₺0,00</div>
+      <div class="small">Bütün gider kayıtları</div>
+    </div>
+    <div class="card">
+      <div class="statlabel">Bu ay net (TL)</div>
+      <div class="stat" id="monthNet">₺0,00</div>
+      <div class="small">Bu ay gelir − gider</div>
+    </div>
+  </div>
+
+  <div class="card section">
+    <h2>Para birimine göre bakiye</h2>
+    <div class="currencygrid">
+      <div class="currencybox">
+        <span class="muted">Türk lirası</span>
+        <strong id="balTRY">₺0,00</strong>
+      </div>
+      <div class="currencybox">
+        <span class="muted">Euro</span>
+        <strong id="balEUR">€0,00</strong>
+        <div class="small" id="balEURTL">₺0,00 karşılığı</div>
+      </div>
+      <div class="currencybox">
+        <span class="muted">ABD doları</span>
+        <strong id="balUSD">$0,00</strong>
+        <div class="small" id="balUSDTL">₺0,00 karşılığı</div>
+      </div>
+    </div>
+    <div class="small" style="margin-top:12px">Döviz bakiyeleri, Kur ve Ayarlar sayfasındaki kurlarla TL toplamına eklenir.</div>
+  </div>
+
+  <div class="columns section">
+    <div class="card">
+      <h2>＋ Yeni işlem ekle</h2>
+      <form id="txForm">
+        <div class="formgrid">
+          <div>
+            <label for="type">İşlem türü</label>
+            <select id="type">
+              <option value="expense">Gider</option>
+              <option value="income">Gelir</option>
+            </select>
+          </div>
+          <div>
+            <label for="currency">Para birimi</label>
+            <select id="currency">
+              <option value="TRY">Türk lirası (TL)</option>
+              <option value="EUR">Euro (€)</option>
+              <option value="USD">ABD doları ($)</option>
+            </select>
+          </div>
+          <div>
+            <label for="amount">Tutar</label>
+            <input id="amount" type="number" min="0.01" step="0.01" placeholder="Örn. 250" required>
+          </div>
+          <div>
+            <label for="category">Kategori</label>
+            <select id="category"></select>
+          </div>
+          <div class="wide">
+            <label for="description">Açıklama (isteğe bağlı)</label>
+            <input id="description" maxlength="100" placeholder="Örn. ekim maaşı">
+          </div>
+          <div class="wide">
+            <label for="date">İşlem tarihi</label>
+            <input id="date" type="date" required>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="btn" type="submit">İşlemi kaydet</button>
+          <button class="btn secondary" type="reset">Temizle</button>
+        </div>
+      </form>
+      <div class="small" style="margin-top:12px">Gelir ve gider kayıtları bakiyeye otomatik yansır. Bir gider eklemek ilgili para birimindeki bakiyeyi azaltır.</div>
+    </div>
+
+    <div class="card">
+      <h2>Son işlemler</h2>
+      <div class="small" style="margin-bottom:12px">Bir kaydı silmek için o kaydın Sil düğmesini kullan.</div>
+      <div id="transactions" class="transactions"></div>
+    </div>
   </div>
 </section>
 
-<section class="columns section">
+<!-- SAYFA 2 -->
+<section class="page" id="reports">
   <div class="card">
-    <h2>Harcamalar nereye gidiyor?</h2>
-    <div class="small">TL ve Euro giderleri TL karşılığıyla gösterilir.</div>
-    <div id="categoryBars" class="section"></div>
+    <h2>📅 Aylık gelir-gider raporu</h2>
+    <p class="small">Yalnızca işlem eklediğin aylar listelenir. Henüz kayıt olmayan geçmiş aylar gösterilmez.</p>
+    <div id="monthButtons" class="monthlist"></div>
+    <div id="monthlySummary"></div>
+    <div class="divider"></div>
+    <h3>Aylara göre gelir ve gider</h3>
+    <div id="monthlyChart"></div>
+    <div class="legend">
+      <span><i class="dot" style="background:var(--green)"></i>Gelir</span>
+      <span><i class="dot" style="background:var(--red)"></i>Gider</span>
+    </div>
   </div>
-  <div class="card">
-    <h2>Son işlemler</h2>
-    <div id="transactions" class="transactions"></div>
+
+  <div class="columns section">
+    <div class="card">
+      <h2>🗓️ Son 7 günlük harcamalar</h2>
+      <p class="small">Bugün dahil son yedi günün giderleri, seçilen günün TL karşılığıyla hesaplanır.</p>
+      <div id="weeklyChart"></div>
+    </div>
+    <div class="card">
+      <h2>🍩 Giderlerin kategori dağılımı</h2>
+      <p class="small" id="donutSubtitle">Seçili aya ait giderler</p>
+      <div id="donutChart"></div>
+    </div>
+  </div>
+
+  <div class="card section">
+    <h2>Seçili ayın işlemleri</h2>
+    <div id="monthTransactions" class="transactions"></div>
   </div>
 </section>
 
-<div class="footer">Verilerin bu tarayıcıda saklanır. Tarayıcı verilerini temizlersen kayıtlar silinebilir; düzenli CSV yedeği al.</div>
+<!-- SAYFA 3 -->
+<section class="page" id="settings">
+  <div class="card">
+    <h2>💱 Döviz kuru ayarları</h2>
+    <p class="small">Kurları elle değiştirebilirsin. Kaydettiğinde döviz bakiyelerinin TL karşılığı, toplam bakiye ve raporlar yeni kurlarla tekrar hesaplanır.</p>
+    <form id="rateForm">
+      <div class="ratefield">
+        <div>
+          <label for="eurRate">1 Euro kaç TL?</label>
+          <input id="eurRate" type="number" min="0.0001" step="0.0001" required>
+        </div>
+        <div>
+          <label for="usdRate">1 ABD doları kaç TL?</label>
+          <input id="usdRate" type="number" min="0.0001" step="0.0001" required>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn" type="submit">Kurları kaydet</button>
+        <button class="btn secondary" id="resetRates" type="button">Varsayılan kurlara dön</button>
+      </div>
+    </form>
+    <div class="note small" style="margin-top:14px">Başlangıç kurları örnektir, canlı piyasa verisi değildir. Güncel kur bilgisine göre kendin değiştirebilirsin.</div>
+    <div class="divider"></div>
+    <h3>Mevcut kur özeti</h3>
+    <div id="rateSummary" class="currencygrid"></div>
+  </div>
+
+  <div class="card section">
+    <h2>💾 Yedekleme ve geri yükleme</h2>
+    <p class="small">Yedek dosyası işlemlerini ve kur ayarlarını içerir. Telefon değiştirirken veya tarayıcı verilerini kaybetme riskine karşı yedek al.</p>
+    <div class="actions">
+      <button class="btn" id="backupBtn" type="button">JSON yedeği indir</button>
+      <button class="btn secondary" id="csvBtn" type="button">İşlemleri CSV indir</button>
+    </div>
+    <div class="divider"></div>
+    <label for="restoreFile">Daha önce aldığın JSON yedeğini seç</label>
+    <input id="restoreFile" type="file" accept=".json,application/json">
+    <div class="actions">
+      <button class="btn secondary" id="restoreBtn" type="button">Yedeği geri yükle</button>
+    </div>
+    <p class="small">Geri yükleme mevcut işlemlerin yerine yedekteki işlemleri koyar. Önce mevcut verilerin için yedek al.</p>
+  </div>
+
+  <div class="card section">
+    <h2>🗑️ Tüm kayıtları sil</h2>
+    <p class="small">Bu işlem cihazda saklanan bütün gelir ve gider kayıtlarını siler. Kur ayarları korunur. Bu işlem geri alınamaz; önce yedek al.</p>
+    <button class="btn danger" id="clearBtn" type="button">Bütün işlemleri sil</button>
+  </div>
+</section>
+
+<div class="footer">Para Takip · Veriler bu cihazdaki tarayıcıda saklanır. Bu uygulama banka hesabına bağlı değildir.</div>
 </main>
 
 <script>
@@ -172,342 +319,496 @@ hr{border:0;border-top:1px solid var(--line);margin:18px 0}
 "use strict";
 
 const $ = id => document.getElementById(id);
-const RATE_EUR_TL = 55;
-const STORAGE_KEY = "paraTakipItems";
-
-const categories = {
-  expense: [
-    "Kira","Market / yemek","Fatura","Ulaşım","Sağlık",
-    "Alışveriş","Eğlence","Borç / taksit","Evcil hayvan",
-    "Abonelik","Diğer gider"
-  ],
-  income: [
-    "Maaş","Ek gelir","Hediye / destek","Satış","İade","Diğer gelir"
-  ]
-};
-
-const icons = {
-  "Kira":"🏠","Market / yemek":"🛒","Fatura":"💡",
-  "Ulaşım":"🚌","Sağlık":"🩺","Alışveriş":"🛍️",
-  "Eğlence":"🎮","Borç / taksit":"💳","Evcil hayvan":"🐾",
-  "Abonelik":"📱","Diğer gider":"📌","Maaş":"💼",
-  "Ek gelir":"✨","Hediye / destek":"🎁","Satış":"📦",
-  "İade":"↩️","Diğer gelir":"💰"
-};
-
-const formatMoney = (amount, currency) =>
-  new Intl.NumberFormat("tr-TR", {
-    style:"currency",
-    currency,
-    minimumFractionDigits:2,
-    maximumFractionDigits:2
-  }).format(Number(amount) || 0);
-
+const ITEMS_KEY = "paraTakipItems";
+const RATES_KEY = "paraTakipRates";
+const DEFAULT_RATES = {EUR:55, USD:38};
+let rates = {...DEFAULT_RATES};
 let items = [];
+let selectedMonth = "";
 
-try {
-  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-  if (Array.isArray(saved)) {
-    items = saved.filter(x =>
-      x &&
-      (x.type === "income" || x.type === "expense") &&
-      Number.isFinite(Number(x.amount)) &&
-      Number(x.amount) > 0 &&
-      (x.currency === "TRY" || x.currency === "EUR") &&
-      typeof x.date === "string"
-    ).map(x => ({
-      id:String(x.id || (Date.now() + Math.random())),
-      type:x.type,
-      currency:x.currency,
-      amount:Number(x.amount),
-      category:String(x.category || "Diğer gider"),
-      description:String(x.description || ""),
-      date:x.date
-    }));
+const incomeCategories = ["Maaş","Destek","Hediye"];
+const expenseCategories = ["Kira","Faturalar","Market","Ulaşım","Yemek","Sağlık","Sigara","Borç","Eğlence","Diğer"];
+const icons = {
+  "Maaş":"💼","Destek":"🤝","Hediye":"🎁",
+  "Kira":"🏠","Faturalar":"💡","Market":"🛒","Ulaşım":"🚌",
+  "Yemek":"🍽️","Sağlık":"🩺","Sigara":"🚬","Borç":"💳",
+  "Eğlence":"🎮","Diğer":"📌"
+};
+const palette = [
+  "#84aaff","#48d6a0","#f6c76b","#ff7b87","#c5a0ff",
+  "#65d5e8","#ffad72","#a5d68b","#f08fcb","#b7c6db"
+];
+
+function money(value,currency="TRY"){
+  const locale = "tr-TR";
+  try{
+    return new Intl.NumberFormat(locale,{
+      style:"currency",currency,
+      minimumFractionDigits:2,maximumFractionDigits:2
+    }).format(Number(value)||0);
+  }catch(e){return (Number(value)||0).toFixed(2)+" "+currency;}
+}
+function fmtDate(date){
+  if(!date)return "";
+  const parts=date.split("-");
+  return parts.length===3 ? parts[2]+"."+parts[1]+"."+parts[0] : date;
+}
+function monthKey(date){return String(date||"").slice(0,7);}
+function monthLabel(key){
+  const p=key.split("-");
+  const names=["Ocak","Şubat","Mart","Nisan","Mayıs","Haziran","Temmuz","Ağustos","Eylül","Ekim","Kasım","Aralık"];
+  return names[Number(p[1])-1]+" "+p[0];
+}
+function currentMonth(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0");
+}
+function todayString(){
+  const d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function escapeHTML(value){
+  return String(value??"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+function uid(){
+  return (window.crypto&&crypto.randomUUID)
+    ? crypto.randomUUID()
+    : Date.now()+"-"+Math.random().toString(36).slice(2);
+}
+function currencySign(c){
+  return c==="EUR"?"€":c==="USD"?"$":"₺";
+}
+function toTL(item){
+  if(item.currency==="EUR")return item.amount*rates.EUR;
+  if(item.currency==="USD")return item.amount*rates.USD;
+  return item.amount;
+}
+function saveItems(){
+  try{
+    localStorage.setItem(ITEMS_KEY,JSON.stringify(items));
+    return true;
+  }catch(e){
+    alert("Kayıtlar kaydedilemedi. Tarayıcı depolamasını kontrol et.");
+    return false;
   }
-} catch (error) {
-  console.error("Kayıtlar okunamadı:", error);
 }
-
-function saveItems() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-  } catch (error) {
-    alert("Kayıtlar kaydedilemedi. Cihazındaki tarayıcı alanını kontrol et.");
+function saveRates(){
+  try{
+    localStorage.setItem(RATES_KEY,JSON.stringify(rates));
+    return true;
+  }catch(e){
+    alert("Kur ayarları kaydedilemedi.");
+    return false;
   }
 }
-
-function escapeHTML(value) {
-  return String(value).replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
-  })[char]);
-}
-
-function getTLValue(item) {
-  return item.currency === "EUR"
-    ? item.amount * RATE_EUR_TL
-    : item.amount;
-}
-
-function updateCategories() {
-  const type = $("type").value;
-  const previous = $("category").value;
-  $("category").innerHTML = "";
-
-  categories[type].forEach(category => {
-    const option = document.createElement("option");
-    option.value = category;
-    option.textContent = category;
-    $("category").appendChild(option);
-  });
-
-  if (categories[type].includes(previous)) {
-    $("category").value = previous;
+function normaliseItem(x){
+  if(!x || !["income","expense"].includes(x.type))return null;
+  const amount=Number(x.amount);
+  if(!Number.isFinite(amount)||amount<=0)return null;
+  let currency=x.currency;
+  if(currency==="TL")currency="TRY";
+  if(!["TRY","EUR","USD"].includes(currency))currency="TRY";
+  let category=String(x.category||"Diğer");
+  if(x.type==="income"&&!incomeCategories.includes(category)){
+    if(/maaş|salary/i.test(category))category="Maaş";
+    else if(/destek|support/i.test(category))category="Destek";
+    else if(/hediye|gift/i.test(category))category="Hediye";
+    else category="Hediye";
   }
+  if(x.type==="expense"&&!expenseCategories.includes(category)){
+    if(/kira/i.test(category))category="Kira";
+    else if(/fatura/i.test(category))category="Faturalar";
+    else if(/market|alışveriş/i.test(category))category="Market";
+    else if(/ulaşım|transport/i.test(category))category="Ulaşım";
+    else if(/yemek|food/i.test(category))category="Yemek";
+    else if(/sağlık/i.test(category))category="Sağlık";
+    else if(/sigara/i.test(category))category="Sigara";
+    else if(/borç|taksit/i.test(category))category="Borç";
+    else if(/eğlence/i.test(category))category="Eğlence";
+    else category="Diğer";
+  }
+  const date=String(x.date||todayString());
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date))return null;
+  return {
+    id:String(x.id||uid()),
+    type:x.type,currency,amount,
+    category,description:String(x.description||""),
+    date
+  };
 }
-
-$("type").addEventListener("change", updateCategories);
-
-function renderBalances() {
-  let totalIncomeTL = 0;
-  let totalExpenseTL = 0;
-  let incomeEUR = 0;
-  let expenseEUR = 0;
-
-  /*
-   * Bütün işlemler TL karşılığına çevrilir.
-   * Euro gelirleri +, Euro giderleri - olarak hesaplanır.
-   */
-  let netTL = 0;
-
-  items.forEach(item => {
-    const amountTL = getTLValue(item);
-
-    if (item.type === "income") {
-      totalIncomeTL += amountTL;
-      netTL += amountTL;
-      if (item.currency === "EUR") incomeEUR += item.amount;
-    } else {
-      totalExpenseTL += amountTL;
-      netTL -= amountTL;
-      if (item.currency === "EUR") expenseEUR += item.amount;
+function loadData(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(ITEMS_KEY)||"[]");
+    if(Array.isArray(saved))items=saved.map(normaliseItem).filter(Boolean);
+  }catch(e){items=[];}
+  try{
+    const savedRates=JSON.parse(localStorage.getItem(RATES_KEY)||"null");
+    if(savedRates){
+      const eur=Number(savedRates.EUR),usd=Number(savedRates.USD);
+      if(Number.isFinite(eur)&&eur>0)rates.EUR=eur;
+      if(Number.isFinite(usd)&&usd>0)rates.USD=usd;
     }
-  });
-
-  $("tlBalance").textContent = formatMoney(netTL, "TRY");
-  $("eurBalance").textContent = formatMoney(netTL / RATE_EUR_TL, "EUR");
-  $("incomeTotal").textContent = formatMoney(totalIncomeTL, "TRY");
-  $("expenseTotal").textContent = formatMoney(totalExpenseTL, "TRY");
-  $("incomeSub").textContent = "Euro geliri: " + formatMoney(incomeEUR, "EUR");
-  $("expenseSub").textContent = "Euro gideri: " + formatMoney(expenseEUR, "EUR");
-  $("combined").textContent = formatMoney(netTL, "TRY");
-
-  const currentMonth = new Date().toISOString().slice(0,7);
-  const monthNet = items
-    .filter(item => item.date.slice(0,7) === currentMonth)
-    .reduce((sum,item) => {
-      const value = getTLValue(item);
-      return sum + (item.type === "income" ? value : -value);
-    },0);
-
-  $("monthNet").textContent = formatMoney(monthNet, "TRY");
+  }catch(e){}
+  if(!localStorage.getItem(RATES_KEY))saveRates();
+  if(items.length)saveItems();
 }
 
-function renderCategoryBars() {
-  const totals = {};
-
-  items.filter(item => item.type === "expense").forEach(item => {
-    totals[item.category] = (totals[item.category] || 0) + getTLValue(item);
+function updateCategoryOptions(){
+  const type=$("type").value;
+  const categories=type==="income"?incomeCategories:expenseCategories;
+  const previous=$("category").value;
+  $("category").innerHTML="";
+  categories.forEach(c=>{
+    const opt=document.createElement("option");
+    opt.value=c;opt.textContent=c;
+    $("category").appendChild(opt);
   });
+  if(categories.includes(previous))$("category").value=previous;
+}
+$("type").addEventListener("change",updateCategoryOptions);
 
-  const sorted = Object.entries(totals).sort((a,b) => b[1]-a[1]);
-  const max = sorted.length ? sorted[0][1] : 0;
-
-  if (!sorted.length) {
-    $("categoryBars").innerHTML =
-      '<div class="empty">Henüz gider kaydı yok. Harcama ekledikçe analiz burada görünecek.</div>';
-    return;
-  }
-
-  $("categoryBars").innerHTML = sorted.map(([category,value]) => `
-    <div class="barrow">
-      <div class="barlabel">
-        <span>${icons[category] || "•"} ${escapeHTML(category)}</span>
-        <strong>${formatMoney(value,"TRY")}</strong>
-      </div>
-      <div class="track">
-        <div class="fill" style="width:${max ? Math.max(2,value/max*100) : 0}%"></div>
-      </div>
-    </div>
-  `).join("");
+function calculate(){
+  const balances={TRY:0,EUR:0,USD:0};
+  let incomeTL=0,expenseTL=0;
+  const byMonth={};
+  const byCategory={};
+  items.forEach(item=>{
+    const sign=item.type==="income"?1:-1;
+    balances[item.currency]+=sign*item.amount;
+    const tl=toTL(item);
+    if(item.type==="income")incomeTL+=tl;
+    else{
+      expenseTL+=tl;
+      const mk=monthKey(item.date);
+      byCategory[mk] ||= {};
+      byCategory[mk][item.category]=(byCategory[mk][item.category]||0)+tl;
+    }
+    const mk=monthKey(item.date);
+    byMonth[mk] ||= {income:0,expense:0};
+    byMonth[mk][item.type]+=tl;
+  });
+  return {balances,incomeTL,expenseTL,byMonth,byCategory};
 }
 
-function renderTransactions() {
-  const sorted = [...items].sort((a,b) =>
-    b.date.localeCompare(a.date) || String(b.id).localeCompare(String(a.id))
-  ).slice(0,50);
+function renderHome(){
+  const c=calculate();
+  const netTL=c.balances.TRY+c.balances.EUR*rates.EUR+c.balances.USD*rates.USD;
+  $("balanceTL").textContent=money(netTL);
+  $("incomeTL").textContent=money(c.incomeTL);
+  $("expenseTL").textContent=money(c.expenseTL);
+  $("balTRY").textContent=money(c.balances.TRY);
+  $("balEUR").textContent=money(c.balances.EUR,"EUR");
+  $("balEURTL").textContent=money(c.balances.EUR*rates.EUR)+" karşılığı";
+  $("balUSD").textContent=money(c.balances.USD,"USD");
+  $("balUSDTL").textContent=money(c.balances.USD*rates.USD)+" karşılığı";
 
-  if (!sorted.length) {
-    $("transactions").innerHTML =
-      '<div class="empty">Henüz işlem yok. İlk gelirini veya giderini ekle.</div>';
+  const mk=currentMonth();
+  const monthly=c.byMonth[mk]||{income:0,expense:0};
+  const net=monthly.income-monthly.expense;
+  $("monthNet").textContent=money(net);
+  $("monthNet").className="stat "+(net<0?"negative":"positive");
+  renderTransactions("transactions",items.slice().sort(sortNewest).slice(0,30));
+}
+
+function sortNewest(a,b){
+  return b.date.localeCompare(a.date)||String(b.id).localeCompare(String(a.id));
+}
+function renderTransactions(containerId,list){
+  const container=$(containerId);
+  if(!list.length){
+    container.innerHTML='<div class="empty">Henüz işlem yok.</div>';
     return;
   }
-
-  $("transactions").innerHTML = sorted.map(item => `
-    <div class="tx">
+  container.innerHTML=list.map(item=>{
+    const symbol=currencySign(item.currency);
+    const amountText=(item.type==="income"?"+":"−")+money(item.amount,item.currency);
+    const tlLine=item.currency==="TRY"?"":'<div class="txmeta">'+escapeHTML(money(toTL(item)))+' TL karşılığı</div>';
+    return `<div class="tx">
       <div class="txleft">
-        <div class="bubble">${icons[item.category] || "💸"}</div>
+        <div class="bubble">${icons[item.category]||"💸"}</div>
         <div style="min-width:0">
-          <div class="txname">${escapeHTML(item.description || item.category)}</div>
-          <div class="txmeta">
-            ${escapeHTML(item.category)} · ${escapeHTML(item.date)} ·
-            ${item.currency === "EUR"
-              ? "Euro · " + formatMoney(getTLValue(item),"TRY") + " karşılığı"
-              : "Türk lirası"}
-          </div>
+          <div class="txname">${escapeHTML(item.description||item.category)}</div>
+          <div class="txmeta">${escapeHTML(item.category)} · ${escapeHTML(fmtDate(item.date))} · ${item.currency}</div>
+          ${tlLine}
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:5px">
-        <span class="amount ${item.type === "income" ? "positive" : "negative"}">
-          ${item.type === "income" ? "+" : "−"}${formatMoney(item.amount,item.currency)}
-        </span>
-        <button class="delete" type="button" data-del="${escapeHTML(item.id)}" aria-label="İşlemi sil">Sil</button>
+      <div>
+        <div class="amount ${item.type==="income"?"positive":"negative"}">${escapeHTML(amountText)}</div>
+        <button type="button" class="delete" data-delete-id="${escapeHTML(item.id)}">Sil</button>
       </div>
-    </div>
-  `).join("");
+    </div>`;
+  }).join("");
 }
 
-function render() {
-  renderBalances();
-  renderCategoryBars();
-  renderTransactions();
-}
-
-/*
- * Silme işlemi liste üzerinde tek bir olay dinleyicisiyle çalışır.
- * Her render işleminde tekrar tekrar dinleyici eklenmez.
- */
-$("transactions").addEventListener("click", event => {
-  const button = event.target.closest("button[data-del]");
-  if (!button) return;
-
+/* Tek silme dinleyicisi: ana ekran ve aylık rapordaki Sil düğmelerini yönetir. */
+document.addEventListener("click",function(event){
+  const button=event.target.closest("button[data-delete-id]");
+  if(!button)return;
   event.preventDefault();
-  event.stopPropagation();
-
-  const id = String(button.dataset.del);
-  const selected = items.find(item => String(item.id) === id);
-
-  if (!selected) {
-    renderTransactions();
+  const id=String(button.getAttribute("data-delete-id"));
+  const item=items.find(x=>String(x.id)===id);
+  if(!item){
     alert("Bu işlem bulunamadı. Liste yenilendi.");
+    render();
     return;
   }
-
-  const confirmed = confirm(
-    '"' + (selected.description || selected.category) +
-    '" işlemini silmek istiyor musun?'
-  );
-
-  if (!confirmed) return;
-
-  const oldLength = items.length;
-  items = items.filter(item => String(item.id) !== id);
-
-  if (items.length === oldLength) {
+  if(!confirm('"'+(item.description||item.category)+'" işlemini silmek istiyor musun?'))return;
+  const before=items.length;
+  items=items.filter(x=>String(x.id)!==id);
+  if(items.length===before){
     alert("İşlem silinemedi.");
     return;
   }
-
   saveItems();
   render();
 });
 
-$("txForm").addEventListener("submit", event => {
+function renderMonthlyChart(months,byMonth){
+  const el=$("monthlyChart");
+  if(!months.length){
+    el.innerHTML='<div class="empty">Grafik için henüz işlem kaydı yok.</div>';
+    return;
+  }
+  const max=Math.max(1,...months.flatMap(m=>[
+    byMonth[m]?.income||0,byMonth[m]?.expense||0
+  ]));
+  el.innerHTML='<div class="chart">'+months.map(m=>{
+    const income=byMonth[m]?.income||0;
+    const expense=byMonth[m]?.expense||0;
+    const ih=Math.max(income?3:0,income/max*150);
+    const eh=Math.max(expense?3:0,expense/max*150);
+    const short=m.slice(5)+"/"+m.slice(2,4);
+    return `<div class="chartcol">
+      <div class="chartbars">
+        <div class="chartbar income" title="Gelir: ${escapeHTML(money(income))}" style="height:${ih}px"></div>
+        <div class="chartbar expense" title="Gider: ${escapeHTML(money(expense))}" style="height:${eh}px"></div>
+      </div>
+      <div class="chartlabel">${escapeHTML(short)}</div>
+    </div>`;
+  }).join("")+'</div>';
+}
+
+function renderWeekly(){
+  const today=new Date();
+  const days=[];
+  for(let i=6;i>=0;i--){
+    const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()-i);
+    const key=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    days.push({key,label:String(d.getDate())+"/"+String(d.getMonth()+1),total:0});
+  }
+  const lookup={};
+  days.forEach(d=>lookup[d.key]=d);
+  items.filter(x=>x.type==="expense").forEach(x=>{
+    if(lookup[x.date])lookup[x.date].total+=toTL(x);
+  });
+  const max=Math.max(1,...days.map(d=>d.total));
+  $("weeklyChart").innerHTML=days.map(d=>`
+    <div class="barrow">
+      <div class="barlabel"><span>${escapeHTML(d.label)}</span><strong>${money(d.total)}</strong></div>
+      <div class="track"><div class="fill" style="width:${d.total?Math.max(2,d.total/max*100):0}%;background:var(--red)"></div></div>
+    </div>`).join("");
+}
+
+function renderDonut(monthKeyValue){
+  const totals={};
+  items.filter(x=>x.type==="expense"&&monthKey(x.date)===monthKeyValue).forEach(x=>{
+    totals[x.category]=(totals[x.category]||0)+toTL(x);
+  });
+  const sorted=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  const total=sorted.reduce((s,x)=>s+x[1],0);
+  $("donutSubtitle").textContent=monthKeyValue?monthLabel(monthKeyValue)+" giderleri":"Seçili ay giderleri";
+  if(!sorted.length){
+    $("donutChart").innerHTML='<div class="empty">Bu ay gider kaydı yok.</div>';
+    return;
+  }
+  let cursor=0;
+  const stops=sorted.map(([name,value],i)=>{
+    const start=cursor;
+    cursor+=value/total*100;
+    return `${palette[i%palette.length]} ${start}% ${cursor}%`;
+  }).join(",");
+  $("donutChart").innerHTML=`
+    <div class="donutrow">
+      <div class="donut" style="background:conic-gradient(${stops})">
+        <div class="donutcenter">Toplam gider<strong>${escapeHTML(money(total))}</strong></div>
+      </div>
+      <div class="donutlegend">${sorted.map(([name,value],i)=>`
+        <div class="donutitem">
+          <span><i class="dot" style="background:${palette[i%palette.length]}"></i>${escapeHTML(name)}</span>
+          <strong>${escapeHTML(money(value))}</strong>
+        </div>`).join("")}
+      </div>
+    </div>`;
+}
+
+function renderReports(){
+  const c=calculate();
+  const months=Object.keys(c.byMonth).filter(m=>m&&c.byMonth[m]).sort();
+  if(!months.includes(selectedMonth))selectedMonth=months.includes(currentMonth())?currentMonth():(months[months.length-1]||"");
+  $("monthButtons").innerHTML=months.length?months.slice().reverse().map(m=>
+    `<button type="button" class="monthbtn ${m===selectedMonth?"active":""}" data-month="${m}">${escapeHTML(monthLabel(m))}</button>`
+  ).join(""):'<div class="empty">Henüz işlem eklenmedi. İlk işlemini eklediğinde ilgili ay burada görünecek.</div>';
+
+  $("monthlySummary").innerHTML=selectedMonth?(()=>{
+    const v=c.byMonth[selectedMonth]||{income:0,expense:0};
+    const net=v.income-v.expense;
+    return `<div class="currencygrid">
+      <div class="currencybox"><span class="muted">Gelir</span><strong class="positive">${escapeHTML(money(v.income))}</strong></div>
+      <div class="currencybox"><span class="muted">Gider</span><strong class="negative">${escapeHTML(money(v.expense))}</strong></div>
+      <div class="currencybox"><span class="muted">Net</span><strong class="${net<0?"negative":"positive"}">${escapeHTML(money(net))}</strong></div>
+    </div>`;
+  })():'';
+  renderMonthlyChart(months,c.byMonth);
+  renderWeekly();
+  renderDonut(selectedMonth);
+  renderTransactions("monthTransactions",selectedMonth?items.filter(x=>monthKey(x.date)===selectedMonth).slice().sort(sortNewest):[]);
+}
+$("monthButtons").addEventListener("click",event=>{
+  const button=event.target.closest("button[data-month]");
+  if(!button)return;
+  selectedMonth=button.dataset.month;
+  renderReports();
+});
+
+function renderRates(){
+  $("eurRate").value=String(rates.EUR);
+  $("usdRate").value=String(rates.USD);
+  $("rateSummary").innerHTML=`
+    <div class="currencybox"><span class="muted">1 EUR</span><strong>${money(rates.EUR)}</strong></div>
+    <div class="currencybox"><span class="muted">1 USD</span><strong>${money(rates.USD)}</strong></div>
+    <div class="currencybox"><span class="muted">1 TRY</span><strong>₺1,00</strong></div>`;
+}
+
+function render(){
+  renderHome();
+  renderReports();
+  renderRates();
+}
+document.querySelectorAll(".navbtn").forEach(button=>{
+  button.addEventListener("click",()=>{
+    document.querySelectorAll(".navbtn").forEach(b=>b.classList.toggle("active",b===button));
+    document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===button.dataset.page));
+  });
+});
+
+$("txForm").addEventListener("submit",event=>{
   event.preventDefault();
-
-  const amount = Number($("amount").value);
-  const date = $("date").value;
-
-  if (!Number.isFinite(amount) || amount <= 0) {
-    alert("Lütfen sıfırdan büyük geçerli bir tutar gir.");
+  const amount=Number($("amount").value);
+  const date=$("date").value;
+  if(!Number.isFinite(amount)||amount<=0){
+    alert("Sıfırdan büyük geçerli bir tutar gir.");
     return;
   }
-
-  if (!date) {
-    alert("Lütfen işlem tarihini seç.");
+  if(!date){
+    alert("İşlem tarihini seç.");
     return;
   }
-
-  const item = {
-    id: String(
-      (window.crypto && crypto.randomUUID)
-        ? crypto.randomUUID()
-        : Date.now() + "-" + Math.random().toString(36).slice(2)
-    ),
-    type:$("type").value,
-    currency:$("currency").value,
-    amount,
-    category:$("category").value,
-    description:$("description").value.trim(),
-    date
+  const item={
+    id:uid(),type:$("type").value,currency:$("currency").value,
+    amount,category:$("category").value,
+    description:$("description").value.trim(),date
   };
-
   items.push(item);
-  saveItems();
+  if(!saveItems())return;
+  selectedMonth=monthKey(date);
   render();
-
-  $("amount").value = "";
-  $("description").value = "";
+  $("amount").value="";
+  $("description").value="";
   $("amount").focus();
 });
+$("txForm").addEventListener("reset",()=>setTimeout(updateCategoryOptions,0));
 
-$("txForm").addEventListener("reset", () => {
-  setTimeout(updateCategories, 0);
+$("rateForm").addEventListener("submit",event=>{
+  event.preventDefault();
+  const eur=Number($("eurRate").value),usd=Number($("usdRate").value);
+  if(!Number.isFinite(eur)||eur<=0||!Number.isFinite(usd)||usd<=0){
+    alert("Her iki kur da sıfırdan büyük geçerli bir sayı olmalı.");
+    return;
+  }
+  rates={EUR:eur,USD:usd};
+  if(saveRates()){
+    render();
+    alert("Kurlar kaydedildi. Bütün bakiyeler ve raporlar güncellendi.");
+  }
+});
+$("resetRates").addEventListener("click",()=>{
+  if(!confirm("Kurları varsayılan değerlere döndürmek istiyor musun?"))return;
+  rates={...DEFAULT_RATES};
+  saveRates();
+  render();
 });
 
-$("exportBtn").addEventListener("click", () => {
-  const rows = [
-    ["Tür","Para birimi","Tutar","Kategori","Açıklama","Tarih"],
-    ...items.map(item => [
-      item.type === "income" ? "Gelir" : "Gider",
-      item.currency,
-      item.amount,
-      item.category,
-      item.description,
-      item.date
+function downloadFile(filename,content,type){
+  const blob=new Blob([content],{type});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=filename;
+  document.body.appendChild(a);a.click();a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+$("backupBtn").addEventListener("click",()=>{
+  const data={
+    app:"Para Takip",version:2,exportedAt:new Date().toISOString(),
+    rates,items
+  };
+  downloadFile("para-takip-yedek.json",JSON.stringify(data,null,2),"application/json;charset=utf-8");
+});
+$("csvBtn").addEventListener("click",()=>{
+  const rows=[
+    ["ID","Tür","Para birimi","Tutar","Kategori","Açıklama","Tarih","TL karşılığı"],
+    ...items.map(x=>[
+      x.id,x.type==="income"?"Gelir":"Gider",x.currency,x.amount,
+      x.category,x.description,x.date,toTL(x).toFixed(2)
     ])
   ];
-
-  const csv = "\ufeff" + rows.map(row =>
-    row.map(value =>
-      '"' + String(value ?? "").replace(/"/g,'""') + '"'
-    ).join(";")
-  ).join("\r\n");
-
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.href = url;
-  link.download = "para-takip.csv";
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  const csv="\ufeff"+rows.map(row=>row.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(";")).join("\r\n");
+  downloadFile("para-takip-islemler.csv",csv,"text/csv;charset=utf-8");
+});
+$("restoreBtn").addEventListener("click",async()=>{
+  const file=$("restoreFile").files[0];
+  if(!file){alert("Önce bir JSON yedek dosyası seç.");return;}
+  let data;
+  try{data=JSON.parse(await file.text());}
+  catch(e){alert("Dosya okunamadı. Geçerli bir JSON yedeği seç.");return;}
+  const incoming=Array.isArray(data)?data:data.items;
+  if(!Array.isArray(incoming)){
+    alert("Bu dosyada işlem listesi bulunamadı.");
+    return;
+  }
+  const restored=incoming.map(normaliseItem).filter(Boolean);
+  if(incoming.length>0&&!restored.length){
+    alert("Dosyada geri yüklenebilecek geçerli işlem bulunamadı.");
+    return;
+  }
+  if(!confirm(restored.length+" işlem geri yüklenecek ve mevcut işlemlerin yerine geçecek. Devam edilsin mi?"))return;
+  const newRates=data.rates;
+  if(newRates){
+    const eur=Number(newRates.EUR),usd=Number(newRates.USD);
+    if(Number.isFinite(eur)&&eur>0)rates.EUR=eur;
+    if(Number.isFinite(usd)&&usd>0)rates.USD=usd;
+    saveRates();
+  }
+  items=restored;
+  saveItems();
+  selectedMonth="";
+  render();
+  $("restoreFile").value="";
+  alert("Yedek geri yüklendi.");
+});
+$("clearBtn").addEventListener("click",()=>{
+  if(!confirm("Bütün gelir ve gider kayıtları kalıcı olarak silinecek. Emin misin?"))return;
+  if(!confirm("Son kez soruyorum: kayıtların silinsin mi? Önce yedek aldığından emin ol."))return;
+  items=[];
+  selectedMonth="";
+  saveItems();
+  render();
 });
 
-$("date").value = [
-  new Date().getFullYear(),
-  String(new Date().getMonth()+1).padStart(2,"0"),
-  String(new Date().getDate()).padStart(2,"0")
-].join("-");
-
-updateCategories();
+loadData();
+$("date").value=todayString();
+updateCategoryOptions();
 render();
 })();
 </script>
