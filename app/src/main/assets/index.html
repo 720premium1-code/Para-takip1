@@ -37,7 +37,7 @@ button:active{opacity:.8}
 .entry-meta{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
 .entry-right{text-align:right;min-width:90px}
 .entry-amount{font-weight:700;overflow-wrap:anywhere;margin-bottom:8px}
-.del{width:auto;margin:0;padding:5px 8px;background:#34303a;color:#ffadb5;font-size:12px}
+.del{width:auto;margin:0;padding:7px 12px;background:#562b35;color:#ffb0b7;font-size:12px}
 .empty{text-align:center;color:var(--muted);padding:25px 8px}
 .notice{color:var(--muted);font-size:12px;line-height:1.5;margin-top:18px}
 </style>
@@ -179,8 +179,6 @@ button:active{opacity:.8}
 
   function getTLAmount(r){
     if (Number.isFinite(r.tlAmount)) return r.tlAmount;
-
-    // Eski sürümdeki kayıtlar TL olarak kabul edilir.
     return r.amount;
   }
 
@@ -214,7 +212,6 @@ button:active{opacity:.8}
 
     records.forEach(function(r){
       var tl = getTLAmount(r);
-
       if(r.type === "income") income += tl;
       else expense += tl;
     });
@@ -222,8 +219,7 @@ button:active{opacity:.8}
     var balanceTl = income - expense;
 
     document.getElementById("balance").textContent = money(balanceTl);
-    document.getElementById("balance").className =
-      "amount " + (balanceTl < 0 ? "red" : "green");
+    document.getElementById("balance").className = "amount " + (balanceTl < 0 ? "red" : "green");
 
     document.getElementById("balanceEuro").textContent =
       formatAmount(balanceTl / EUR_RATE, "EUR") + " karşılığı";
@@ -280,7 +276,6 @@ button:active{opacity:.8}
 
       right.appendChild(value);
 
-      // Euro işlemlerinde TL karşılığını da göster.
       if(currency === "EUR"){
         var equivalent = document.createElement("div");
         equivalent.className = "entry-meta";
@@ -295,9 +290,8 @@ button:active{opacity:.8}
       del.setAttribute("aria-label", r.category + " işlemini sil");
 
       del.addEventListener("click", function(){
-        if(!confirm("Bu işlemi silmek istediğine emin misin?")) return;
+        var previousRecords = records.slice();
 
-        var old = records;
         records = records.filter(function(x){
           return x.id !== r.id;
         });
@@ -305,7 +299,7 @@ button:active{opacity:.8}
         if(saveRecords()){
           render();
         } else {
-          records = old;
+          records = previousRecords;
         }
       });
 
