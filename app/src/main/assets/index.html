@@ -6,40 +6,141 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Para Takip</title>
 <style>
-:root{color-scheme:dark;--bg:#10131b;--card:#1b202c;--text:#f4f5fa;--muted:#9ca5b5;--green:#42d69b;--red:#ff6b78;--blue:#8798ff}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;padding:20px 15px 35px}
-main{max-width:520px;margin:auto}
-h1{font-size:28px;margin:8px 0}
-.sub{color:var(--muted);margin:0 0 22px;font-size:14px}
-.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.card{background:var(--card);padding:16px;border-radius:15px;min-width:0}
-.balance{grid-column:1/-1;border:1px solid #343c51}
-.label{font-size:13px;color:var(--muted);margin-bottom:10px}
-.amount{font-size:21px;font-weight:700;overflow-wrap:anywhere}
-.subamount{font-size:14px;color:var(--muted);margin-top:7px}
-.green{color:var(--green)}.red{color:var(--red)}
-h2{font-size:19px;margin:26px 0 14px}
-.panel{background:var(--card);border-radius:15px;padding:16px}
-.tabs{display:flex;gap:8px;margin-bottom:16px}
-.tabs button{flex:1;background:#2a3040;color:var(--text)}
-.tabs button.active.income{background:#174c3c;color:#83f2c1}
-.tabs button.active.expense{background:#562b35;color:#ffb0b7}
-input,select,button{width:100%;font:inherit;border:0;border-radius:10px;padding:13px;margin-bottom:11px}
-input,select{background:#111620;color:var(--text);border:1px solid #343c4c}
-button{background:var(--blue);color:#111523;font-weight:700;cursor:pointer}
-button:active{opacity:.8}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-#history{display:flex;flex-direction:column;gap:9px}
-.entry{background:var(--card);border-radius:13px;padding:13px;display:flex;gap:10px;align-items:center}
-.entry-info{flex:1;min-width:0}
-.entry-title{font-weight:700;overflow-wrap:anywhere}
-.entry-meta{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
-.entry-right{text-align:right;min-width:90px}
-.entry-amount{font-weight:700;overflow-wrap:anywhere;margin-bottom:8px}
-.del{width:auto;margin:0;padding:7px 12px;background:#562b35;color:#ffb0b7;font-size:12px}
-.empty{text-align:center;color:var(--muted);padding:25px 8px}
-.notice{color:var(--muted);font-size:12px;line-height:1.5;margin-top:18px}
+:root {
+  color-scheme: dark;
+  --bg: #10131b;
+  --card: #1b202c;
+  --text: #f4f5fa;
+  --muted: #9ca5b5;
+  --green: #42d69b;
+  --red: #ff6b78;
+  --blue: #8798ff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  padding: 20px 15px 35px;
+}
+main { max-width: 520px; margin: auto; }
+h1 { font-size: 28px; margin: 8px 0; }
+h2 { font-size: 19px; margin: 26px 0 14px; }
+h3 { font-size: 15px; margin: 18px 0 12px; }
+.sub { color: var(--muted); margin: 0 0 22px; font-size: 14px; }
+.cards, .report-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.card, .report-card {
+  background: var(--card);
+  padding: 15px;
+  border-radius: 15px;
+  min-width: 0;
+}
+.balance { grid-column: 1 / -1; border: 1px solid #343c51; }
+.label { font-size: 13px; color: var(--muted); margin-bottom: 9px; display: block; }
+.amount { font-size: 20px; font-weight: 700; overflow-wrap: anywhere; }
+.subamount { font-size: 13px; color: var(--muted); margin-top: 7px; }
+.green { color: var(--green); }
+.red { color: var(--red); }
+.panel { background: var(--card); border-radius: 15px; padding: 16px; }
+.tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+.tabs button { flex: 1; background: #2a3040; color: var(--text); }
+.tabs button.active.income { background: #174c3c; color: #83f2c1; }
+.tabs button.active.expense { background: #562b35; color: #ffb0b7; }
+input, select, button {
+  width: 100%;
+  font: inherit;
+  border: 0;
+  border-radius: 10px;
+  padding: 13px;
+  margin-bottom: 11px;
+}
+input, select {
+  background: #111620;
+  color: var(--text);
+  border: 1px solid #343c4c;
+}
+button {
+  background: var(--blue);
+  color: #111523;
+  font-weight: 700;
+  cursor: pointer;
+}
+button:active { opacity: .8; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+#history { display: flex; flex-direction: column; gap: 9px; }
+.entry {
+  background: var(--card);
+  border-radius: 13px;
+  padding: 13px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.entry-info { flex: 1; min-width: 0; }
+.entry-title { font-weight: 700; overflow-wrap: anywhere; }
+.entry-meta {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+}
+.entry-right { text-align: right; min-width: 90px; }
+.entry-amount { font-weight: 700; overflow-wrap: anywhere; margin-bottom: 8px; }
+.del {
+  width: auto;
+  margin: 0;
+  padding: 7px 12px;
+  background: #562b35;
+  color: #ffb0b7;
+  font-size: 12px;
+}
+.empty, .report-empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 20px 8px;
+  font-size: 13px;
+}
+.notice { color: var(--muted); font-size: 12px; line-height: 1.5; margin-top: 18px; }
+.report-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 26px 0 14px;
+}
+.report-head h2 { margin: 0; }
+.report-head input { width: 155px; margin: 0; padding: 10px; min-width: 0; }
+.report-card .label { margin-bottom: 8px; }
+.report-card .amount { font-size: 18px; }
+.chart-title { font-size: 15px; font-weight: 700; margin: 18px 0 12px; }
+.chart-row { margin: 12px 0; }
+.chart-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+.chart-label span:first-child { overflow-wrap: anywhere; }
+.chart-label span:last-child { text-align: right; flex-shrink: 0; }
+.bar-track {
+  height: 9px;
+  background: #2a3040;
+  border-radius: 99px;
+  overflow: hidden;
+}
+.bar-fill { height: 100%; border-radius: 99px; background: var(--red); }
+.income-fill { background: var(--green); }
+@media (max-width: 360px) {
+  body { padding: 14px 10px 25px; }
+  .report-head input { width: 135px; }
+  .amount { font-size: 18px; }
+}
 </style>
 </head>
 <body>
@@ -65,6 +166,43 @@ button:active{opacity:.8}
     </div>
   </section>
 
+  <section>
+    <div class="report-head">
+      <h2>Aylık rapor</h2>
+      <input id="reportMonth" type="month" aria-label="Rapor ayı">
+    </div>
+
+    <div class="report-cards">
+      <div class="report-card">
+        <div class="label">Aylık gelir</div>
+        <div class="amount green" id="monthIncome">0,00 ₺</div>
+      </div>
+      <div class="report-card">
+        <div class="label">Aylık gider</div>
+        <div class="amount red" id="monthExpense">0,00 ₺</div>
+      </div>
+      <div class="report-card">
+        <div class="label">Aylık fark</div>
+        <div class="amount" id="monthNet">0,00 ₺</div>
+      </div>
+      <div class="report-card">
+        <div class="label">İşlem sayısı</div>
+        <div class="amount" id="monthCount">0</div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:12px">
+      <div class="chart-title">📉 Gider kategorileri</div>
+      <div id="expenseChart"></div>
+      <div class="chart-title">📈 Gelir kategorileri</div>
+      <div id="incomeChart"></div>
+      <p class="notice">
+        Rapor, seçtiğin ayın işlemlerini gösterir. Euro işlemleri
+        1 € = 55 ₺ sabit kuruyla TL karşılığına çevrilir.
+      </p>
+    </div>
+  </section>
+
   <h2>Yeni işlem</h2>
   <form class="panel" id="form">
     <div class="tabs">
@@ -79,10 +217,11 @@ button:active{opacity:.8}
     </select>
 
     <label class="label" for="amount" id="amountLabel">Tutar (₺)</label>
-    <input id="amount" type="number" min="0.01" max="1000000000" step="0.01" placeholder="Örn. 500" inputmode="decimal" required>
+    <input id="amount" type="number" min="0.01" max="1000000000"
+      step="0.01" placeholder="Örn. 500" inputmode="decimal" required>
 
     <p class="notice" style="margin:0 0 12px">
-      Sabit kur: 1 € = 55 ₺. Bakiye ve toplamlar TL karşılığıyla hesaplanır.
+      Sabit kur: 1 € = 55 ₺. Bakiye ve raporlar TL karşılığıyla hesaplanır.
     </p>
 
     <label class="label" for="category">Kategori</label>
@@ -106,20 +245,24 @@ button:active{opacity:.8}
   <div id="history"></div>
 
   <p class="notice">
-    Kayıtların bu cihazda saklanır. Uygulama verilerini silersen veya uygulamayı kaldırırsan kayıtlar kaybolabilir. Önemli kayıtlarını ayrıca yedekle.
+    Kayıtların bu cihazda saklanır. Uygulama verilerini silersen veya
+    uygulamayı kaldırırsan kayıtlar kaybolabilir. Önemli kayıtlarını ayrıca yedekle.
   </p>
 </main>
 
 <script>
-(function(){
+(function() {
   "use strict";
 
   var type = "income";
   var storageKey = "paraTakipRecordsV1";
   var EUR_RATE = 55;
 
-  var incomeCategories = ["Maaş","Ek gelir","Satış","İade","Diğer"];
-  var expenseCategories = ["Yemek","Ulaşım","Kira","Fatura","Alışveriş","Eğlence","Sağlık","Borç ödemesi","Diğer"];
+  var incomeCategories = ["Maaş", "Ek gelir", "Satış", "İade", "Diğer"];
+  var expenseCategories = [
+    "Yemek", "Ulaşım", "Kira", "Fatura", "Alışveriş",
+    "Eğlence", "Sağlık", "Borç ödemesi", "Diğer"
+  ];
 
   var form = document.getElementById("form");
   var amountInput = document.getElementById("amount");
@@ -128,20 +271,24 @@ button:active{opacity:.8}
   var dateInput = document.getElementById("date");
   var noteInput = document.getElementById("note");
   var history = document.getElementById("history");
+  var reportMonth = document.getElementById("reportMonth");
 
-  function today(){
+  function today() {
     var d = new Date();
-    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    return d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0");
   }
 
   dateInput.value = today();
+  reportMonth.value = today().slice(0, 7);
 
-  function loadRecords(){
+  function loadRecords() {
     try {
       var data = JSON.parse(localStorage.getItem(storageKey) || "[]");
       if (!Array.isArray(data)) return [];
 
-      return data.filter(function(r){
+      return data.filter(function(r) {
         return r &&
           typeof r.id === "string" &&
           (r.type === "income" || r.type === "expense") &&
@@ -149,50 +296,53 @@ button:active{opacity:.8}
           r.amount > 0 &&
           typeof r.category === "string";
       });
-    } catch(e) {
+    } catch (e) {
       return [];
     }
   }
 
   var records = loadRecords();
 
-  function saveRecords(){
+  function saveRecords() {
     try {
       localStorage.setItem(storageKey, JSON.stringify(records));
       return true;
-    } catch(e) {
+    } catch (e) {
       alert("Kayıt yapılamadı. Cihazında yeterli depolama alanı olmayabilir.");
       return false;
     }
   }
 
-  function formatAmount(n, currency){
+  function formatAmount(n, currency) {
     return Number(n).toLocaleString("tr-TR", {
-      minimumFractionDigits:2,
-      maximumFractionDigits:2
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     }) + (currency === "EUR" ? " €" : " ₺");
   }
 
-  function money(n){
+  function money(n) {
     return formatAmount(n, "TRY");
   }
 
-  function getTLAmount(r){
+  function getTLAmount(r) {
     if (Number.isFinite(r.tlAmount)) return r.tlAmount;
     return r.amount;
   }
 
-  function setType(next){
+  function setType(next) {
     type = next;
     var inc = type === "income";
 
-    document.getElementById("incomeTab").className = inc ? "active income" : "";
-    document.getElementById("expenseTab").className = !inc ? "active expense" : "";
-    document.getElementById("save").textContent = inc ? "Geliri kaydet" : "Gideri kaydet";
+    document.getElementById("incomeTab").className =
+      inc ? "active income" : "";
+    document.getElementById("expenseTab").className =
+      !inc ? "active expense" : "";
+    document.getElementById("save").textContent =
+      inc ? "Geliri kaydet" : "Gideri kaydet";
 
     categoryInput.innerHTML = "";
 
-    (inc ? incomeCategories : expenseCategories).forEach(function(c){
+    (inc ? incomeCategories : expenseCategories).forEach(function(c) {
       var option = document.createElement("option");
       option.value = c;
       option.textContent = c;
@@ -200,26 +350,117 @@ button:active{opacity:.8}
     });
   }
 
-  currencyInput.addEventListener("change", function(){
+  currencyInput.addEventListener("change", function() {
     var isEuro = currencyInput.value === "EUR";
-    document.getElementById("amountLabel").textContent = isEuro ? "Tutar (€)" : "Tutar (₺)";
+    document.getElementById("amountLabel").textContent =
+      isEuro ? "Tutar (€)" : "Tutar (₺)";
     amountInput.placeholder = isEuro ? "Örn. 100" : "Örn. 500";
   });
 
-  function render(){
+  function renderCategoryChart(targetId, monthRecords, wantedType) {
+    var totals = {};
+
+    monthRecords.forEach(function(r) {
+      if (r.type !== wantedType) return;
+      totals[r.category] = (totals[r.category] || 0) + getTLAmount(r);
+    });
+
+    var target = document.getElementById(targetId);
+    target.innerHTML = "";
+
+    var items = Object.keys(totals).map(function(name) {
+      return { name: name, total: totals[name] };
+    }).sort(function(a, b) {
+      return b.total - a.total;
+    });
+
+    if (items.length === 0) {
+      var empty = document.createElement("div");
+      empty.className = "report-empty";
+      empty.textContent = "Bu ay için kayıt yok.";
+      target.appendChild(empty);
+      return;
+    }
+
+    var max = items[0].total || 1;
+
+    items.forEach(function(item) {
+      var row = document.createElement("div");
+      row.className = "chart-row";
+
+      var label = document.createElement("div");
+      label.className = "chart-label";
+
+      var name = document.createElement("span");
+      name.textContent = item.name;
+
+      var value = document.createElement("span");
+      value.textContent = money(item.total);
+
+      label.appendChild(name);
+      label.appendChild(value);
+
+      var track = document.createElement("div");
+      track.className = "bar-track";
+
+      var fill = document.createElement("div");
+      fill.className = "bar-fill" +
+        (wantedType === "income" ? " income-fill" : "");
+      fill.style.width = Math.max(2, item.total / max * 100) + "%";
+
+      track.appendChild(fill);
+      row.appendChild(label);
+      row.appendChild(track);
+      target.appendChild(row);
+    });
+  }
+
+  function renderMonthly() {
+    var month = reportMonth.value || today().slice(0, 7);
+
+    var monthRecords = records.filter(function(r) {
+      return typeof r.date === "string" && r.date.slice(0, 7) === month;
+    });
+
     var income = 0;
     var expense = 0;
 
-    records.forEach(function(r){
+    monthRecords.forEach(function(r) {
+      if (r.type === "income") income += getTLAmount(r);
+      else expense += getTLAmount(r);
+    });
+
+    var net = income - expense;
+
+    document.getElementById("monthIncome").textContent = money(income);
+    document.getElementById("monthExpense").textContent = money(expense);
+    document.getElementById("monthNet").textContent = money(net);
+    document.getElementById("monthNet").className =
+      "amount " + (net < 0 ? "red" : "green");
+    document.getElementById("monthCount").textContent =
+      String(monthRecords.length);
+
+    renderCategoryChart("expenseChart", monthRecords, "expense");
+    renderCategoryChart("incomeChart", monthRecords, "income");
+  }
+
+  reportMonth.addEventListener("change", renderMonthly);
+
+  function render() {
+    var income = 0;
+    var expense = 0;
+
+    records.forEach(function(r) {
       var tl = getTLAmount(r);
-      if(r.type === "income") income += tl;
+      if (r.type === "income") income += tl;
       else expense += tl;
     });
 
     var balanceTl = income - expense;
 
     document.getElementById("balance").textContent = money(balanceTl);
-    document.getElementById("balance").className = "amount " + (balanceTl < 0 ? "red" : "green");
+    document.getElementById("balance").className =
+      "amount " + (balanceTl < 0 ? "red" : "green");
 
     document.getElementById("balanceEuro").textContent =
       formatAmount(balanceTl / EUR_RATE, "EUR") + " karşılığı";
@@ -234,102 +475,103 @@ button:active{opacity:.8}
 
     history.innerHTML = "";
 
-    var sorted = records.slice().sort(function(a,b){
+    var sorted = records.slice().sort(function(a, b) {
       return b.date.localeCompare(a.date) || b.id.localeCompare(a.id);
     });
 
-    if(sorted.length === 0){
+    if (sorted.length === 0) {
       var empty = document.createElement("div");
       empty.className = "empty";
       empty.textContent = "Henüz işlem yok. İlk gelirini veya giderini ekle.";
       history.appendChild(empty);
-      return;
-    }
+    } else {
+      sorted.forEach(function(r) {
+        var entry = document.createElement("div");
+        entry.className = "entry";
 
-    sorted.forEach(function(r){
-      var entry = document.createElement("div");
-      entry.className = "entry";
+        var info = document.createElement("div");
+        info.className = "entry-info";
 
-      var info = document.createElement("div");
-      info.className = "entry-info";
+        var title = document.createElement("div");
+        title.className = "entry-title";
+        title.textContent = r.category;
 
-      var title = document.createElement("div");
-      title.className = "entry-title";
-      title.textContent = r.category;
+        var meta = document.createElement("div");
+        meta.className = "entry-meta";
+        meta.textContent = r.date + (r.note ? " · " + r.note : "");
 
-      var meta = document.createElement("div");
-      meta.className = "entry-meta";
-      meta.textContent = r.date + (r.note ? " · " + r.note : "");
+        info.appendChild(title);
+        info.appendChild(meta);
 
-      info.appendChild(title);
-      info.appendChild(meta);
+        var right = document.createElement("div");
+        right.className = "entry-right";
 
-      var right = document.createElement("div");
-      right.className = "entry-right";
+        var value = document.createElement("div");
+        value.className = "entry-amount " +
+          (r.type === "income" ? "green" : "red");
 
-      var value = document.createElement("div");
-      value.className = "entry-amount " + (r.type === "income" ? "green" : "red");
+        var currency = r.currency === "EUR" ? "EUR" : "TRY";
+        var sign = r.type === "income" ? "+" : "−";
+        value.textContent = sign + formatAmount(r.amount, currency);
+        right.appendChild(value);
 
-      var currency = r.currency === "EUR" ? "EUR" : "TRY";
-      var sign = r.type === "income" ? "+" : "−";
-      value.textContent = sign + formatAmount(r.amount, currency);
+        if (currency === "EUR") {
+          var equivalent = document.createElement("div");
+          equivalent.className = "entry-meta";
+          equivalent.textContent = formatAmount(getTLAmount(r), "TRY");
+          right.appendChild(equivalent);
+        }
 
-      right.appendChild(value);
+        var del = document.createElement("button");
+        del.type = "button";
+        del.className = "del";
+        del.textContent = "Sil";
+        del.setAttribute("aria-label", r.category + " işlemini sil");
 
-      if(currency === "EUR"){
-        var equivalent = document.createElement("div");
-        equivalent.className = "entry-meta";
-        equivalent.textContent = formatAmount(getTLAmount(r), "TRY");
-        right.appendChild(equivalent);
-      }
+        del.addEventListener("click", function() {
+          var previousRecords = records.slice();
 
-      var del = document.createElement("button");
-      del.type = "button";
-      del.className = "del";
-      del.textContent = "Sil";
-      del.setAttribute("aria-label", r.category + " işlemini sil");
+          records = records.filter(function(x) {
+            return x.id !== r.id;
+          });
 
-      del.addEventListener("click", function(){
-        var previousRecords = records.slice();
-
-        records = records.filter(function(x){
-          return x.id !== r.id;
+          if (saveRecords()) {
+            render();
+          } else {
+            records = previousRecords;
+          }
         });
 
-        if(saveRecords()){
-          render();
-        } else {
-          records = previousRecords;
-        }
+        right.appendChild(del);
+        entry.appendChild(info);
+        entry.appendChild(right);
+        history.appendChild(entry);
       });
+    }
 
-      right.appendChild(del);
-      entry.appendChild(info);
-      entry.appendChild(right);
-      history.appendChild(entry);
-    });
+    renderMonthly();
   }
 
-  document.getElementById("incomeTab").addEventListener("click", function(){
+  document.getElementById("incomeTab").addEventListener("click", function() {
     setType("income");
   });
 
-  document.getElementById("expenseTab").addEventListener("click", function(){
+  document.getElementById("expenseTab").addEventListener("click", function() {
     setType("expense");
   });
 
-  form.addEventListener("submit", function(e){
+  form.addEventListener("submit", function(e) {
     e.preventDefault();
 
     var amount = Number(amountInput.value);
     var currency = currencyInput.value;
 
-    if(!Number.isFinite(amount) || amount <= 0 || amount > 1000000000){
+    if (!Number.isFinite(amount) || amount <= 0 || amount > 1000000000) {
       alert("Lütfen geçerli bir tutar gir.");
       return;
     }
 
-    if(!dateInput.value){
+    if (!dateInput.value) {
       alert("Lütfen tarihi seç.");
       return;
     }
@@ -352,7 +594,7 @@ button:active{opacity:.8}
 
     records.unshift(record);
 
-    if(!saveRecords()){
+    if (!saveRecords()) {
       records.shift();
       return;
     }
