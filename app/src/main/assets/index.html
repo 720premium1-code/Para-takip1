@@ -1,438 +1,846 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10131c">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Para Takip</title>
+
 <style>
-*{box-sizing:border-box}
-body{margin:0;padding:18px 14px 90px;background:#10131c;color:#f4f6fb;font-family:Arial,sans-serif}
-h1{margin:0}h2{font-size:21px}h3{font-size:16px}
-.muted{color:#a3abc0;font-size:12px}
-.card{background:#191e2b;border:1px solid #30384b;border-radius:15px;padding:15px;margin:12px 0}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.label{color:#a3abc0;font-size:12px;margin-bottom:7px}
-.amount{font-size:20px;font-weight:bold;overflow-wrap:anywhere}
-.green{color:#45d6a0}.red{color:#ff7082}.blue{color:#8da7ff}
-input,select,button,textarea{font:inherit;width:100%;padding:12px;border-radius:10px;border:1px solid #30384b;margin:5px 0;background:#101521;color:white}
-button{background:#8da7ff;color:#10131c;font-weight:bold;border:0}
-button.secondary{background:#252d40;color:white}
-button.danger{background:#512632;color:#ffdbe0}
-.page{display:none}.page.active{display:block}
-.tx{display:flex;gap:9px;align-items:center;border-bottom:1px solid #30384b;padding:12px 0}
-.txinfo{flex:1;min-width:0}.txinfo small{display:block;color:#a3abc0;margin-top:5px;overflow-wrap:anywhere}
-.txright{text-align:right}.txright strong{display:block;overflow-wrap:anywhere}
-.txright button{width:auto;padding:7px 10px;font-size:12px}
-.monthbox{background:#191e2b;border:1px solid #30384b;border-radius:14px;padding:14px;margin:10px 0}
-.monthtop{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.monthtop strong{font-size:16px}
-.monthbox .grid{margin-top:12px}
-.monthbox button{margin-top:10px}
-.progress{height:8px;background:#30384b;border-radius:8px;overflow:hidden;margin:10px 0}
-.progress div{height:100%;background:#45d6a0}
-nav{position:fixed;bottom:0;left:0;right:0;display:flex;gap:6px;background:#191e2b;padding:8px}
-nav button{background:#252d40;color:white;margin:0;font-size:12px}
-.overlay{position:fixed;inset:0;background:#000b;z-index:20;display:none;align-items:center;justify-content:center;padding:20px}
-.dialog{background:#191e2b;border:1px solid #46506a;border-radius:16px;padding:20px;width:100%;max-width:380px}
-.dialog p{line-height:1.5}
-.empty{color:#a3abc0;text-align:center;padding:18px}
+:root {
+  --bg: #0b1020;
+  --card: #151d30;
+  --input: #0d1527;
+  --border: #29354b;
+  --text: #f1f5f9;
+  --muted: #94a3b8;
+  --green: #34d399;
+  --red: #fb7185;
+  --blue: #60a5fa;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 18px;
+  padding-bottom: 45px;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  width: 100%;
+  max-width: 650px;
+  margin: auto;
+}
+
+h1 {
+  margin-bottom: 5px;
+  font-size: 28px;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-bottom: 22px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 17px;
+  margin-bottom: 15px;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.balance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.balance {
+  padding: 15px;
+  background: var(--input);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+
+.balance-label {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 9px;
+}
+
+.balance-value {
+  font-size: clamp(17px, 4.5vw, 23px);
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.green { color: var(--green); }
+.red { color: var(--red); }
+.blue { color: var(--blue); }
+
+label {
+  display: block;
+  margin: 12px 0 7px;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+input, select, button {
+  width: 100%;
+  min-height: 45px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 15px;
+}
+
+input, select {
+  background: var(--input);
+  color: var(--text);
+}
+
+button {
+  background: var(--green);
+  color: #06271d;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+}
+
+button:active { opacity: .8; }
+
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.secondary {
+  background: #26344c;
+  color: var(--text);
+}
+
+.danger {
+  background: #4b202d;
+  color: #fecdd3;
+}
+
+.small-button {
+  width: auto;
+  min-height: 36px;
+  padding: 8px 11px;
+  font-size: 12px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-row:last-child { border-bottom: none; }
+
+.month-box {
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 13px;
+}
+
+.month-title {
+  font-weight: bold;
+  font-size: 17px;
+  margin-bottom: 12px;
+}
+
+.month-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.month-stat {
+  background: var(--input);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 10px;
+}
+
+.month-stat small {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.month-stat strong {
+  overflow-wrap: anywhere;
+  font-size: 14px;
+}
+
+.transaction {
+  background: var(--input);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 10px;
+  margin-top: 9px;
+}
+
+.transaction-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.transaction-name {
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+.transaction-info {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+.transaction-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.empty {
+  color: var(--muted);
+  text-align: center;
+  padding: 20px 5px;
+  font-size: 14px;
+}
+
+.note {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 15px 0;
+}
+
+@media (max-width: 360px) {
+  body { padding: 10px; }
+  .card { padding: 12px; }
+  .balance-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
+
 <body>
+<div class="container">
 
-<header>
-<h1>Para Takip</h1>
-<p class="muted">Gelirlerini, giderlerini ve bütçeni yönet.</p>
-</header>
+  <h1>💰 Para Takip</h1>
+  <div class="subtitle">Gelirlerini, giderlerini ve birikimini takip et.</div>
 
-<section id="home" class="page active">
-<h2>Genel durum</h2>
-<div class="grid">
-<div class="card"><div class="label">TL bakiyesi</div><div id="balance" class="amount">₺0</div></div>
-<div class="card"><div class="label">Euro bakiyesi</div><div id="euroBalance" class="amount blue">€0</div></div>
-<div class="card"><div class="label">Bu ay gelir</div><div id="income" class="amount green">₺0</div></div>
-<div class="card"><div class="label">Bu ay gider</div><div id="expense" class="amount red">₺0</div></div>
-</div>
-<div class="card">
-<h3>Aylık bütçe</h3>
-<div id="budgetText" class="muted">Bütçe belirlenmedi.</div>
-<div class="progress"><div id="progress" style="width:0%"></div></div>
-</div>
-<div class="card">
-<h3>Son işlemler</h3>
-<div id="recent"></div>
-</div>
-</section>
+  <div class="card">
+    <h2>Toplam Bakiyem</h2>
+    <div class="balance-grid">
+      <div class="balance">
+        <div class="balance-label">Türk lirası bakiyesi</div>
+        <div class="balance-value green" id="tlBalance">0 TL</div>
+      </div>
+      <div class="balance">
+        <div class="balance-label">Euro bakiyesi</div>
+        <div class="balance-value blue" id="eurBalance">0 €</div>
+      </div>
+    </div>
+    <hr>
+    <div class="summary-row">
+      <span class="note">Toplam TL karşılığı</span>
+      <strong id="totalBalance">0 TL</strong>
+    </div>
+    <div class="note">Euro hesaplaması varsayılan 1 € = 55 TL üzerinden yapılır.</div>
+  </div>
 
-<section id="transactions" class="page">
-<h2>İşlemler</h2>
-<div class="card">
-<h3>Yeni işlem ekle</h3>
-<form id="txForm">
-<label class="muted">İşlem türü</label>
-<select id="type"><option value="expense">Gider</option><option value="income">Gelir</option></select>
-<label class="muted">Para birimi</label>
-<select id="currency"><option value="TRY">Türk lirası</option><option value="EUR">Euro</option></select>
-<label class="muted">Tutar</label>
-<input id="amount" type="number" min="0.01" step="0.01" required placeholder="Tutar">
-<label class="muted">Kategori</label>
-<select id="category">
-<option>Yemek</option><option>Market</option><option>Kira</option>
-<option>Ulaşım</option><option>Fatura</option><option>Maaş</option>
-<option>Ek gelir</option><option>Alışveriş</option><option>Motor</option>
-<option>Eğlence</option><option>Sağlık</option><option>Diğer</option>
-</select>
-<label class="muted">Tarih</label>
-<input id="date" type="date" required>
-<label class="muted">Açıklama</label>
-<input id="note" maxlength="120" placeholder="İsteğe bağlı">
-<button type="submit">İşlemi kaydet</button>
-</form>
-</div>
+  <div class="card">
+    <h2>Yeni Kayıt Ekle</h2>
 
-<div class="card">
-<h3>Aylara göre gelir ve gider</h3>
-<p class="muted">Her ay ayrı bir kutuda gösterilir. Bir aya basarak işlemlerini görüntüleyebilirsin.</p>
-<div id="months"></div>
-</div>
+    <label for="type">İşlem türü</label>
+    <select id="type">
+      <option value="income">Gelir</option>
+      <option value="expense">Gider</option>
+    </select>
 
-<div class="card" id="monthDetails" style="display:none">
-<div class="monthtop"><h3 id="detailTitle">Ayın işlemleri</h3><button type="button" id="closeDetails" class="secondary" style="width:auto">Kapat</button></div>
-<div id="detailSummary"></div>
-<div id="detailList"></div>
-</div>
+    <label for="category">Kategori</label>
+    <select id="category"></select>
 
-<div class="card">
-<h3>Tüm işlem geçmişi</h3>
-<select id="filter">
-<option value="all">Tüm işlemler</option>
-<option value="income">Sadece gelir</option>
-<option value="expense">Sadece gider</option>
-</select>
-<div id="history"></div>
-</div>
-</section>
+    <label for="amount">Tutar</label>
+    <input id="amount" type="number" min="0.01" step="0.01"
+           placeholder="Örnek: 1500">
 
-<section id="settings" class="page">
-<h2>Ayarlar</h2>
-<div class="card">
-<h3>Euro kuru</h3>
-<label class="muted">1 Euro kaç TL?</label>
-<input id="rate" type="number" min="0.01" step="0.01">
-<button id="saveRate">Kuru kaydet</button>
-</div>
-<div class="card">
-<h3>Aylık bütçe</h3>
-<label class="muted">Aylık bütçe (TL)</label>
-<input id="budget" type="number" min="0" step="0.01">
-<button id="saveBudget">Bütçeyi kaydet</button>
-</div>
-<div class="card">
-<h3>Veri yedekleme</h3>
-<button id="backup">Yedek oluştur</button>
-<textarea id="backupData" rows="6" placeholder="Yedek burada görünür"></textarea>
-<button id="restore">Yedeği geri yükle</button>
-</div>
-</section>
+    <label for="currency">Para birimi</label>
+    <select id="currency">
+      <option value="TRY">Türk lirası (TL)</option>
+      <option value="EUR">Euro (€)</option>
+    </select>
 
-<div id="deleteOverlay" class="overlay">
-<div class="dialog">
-<h3>İşlemi sil</h3>
-<p>Bu işlem kalıcı olarak silinsin mi?</p>
-<div class="grid">
-<button type="button" class="secondary" id="cancelDelete">Vazgeç</button>
-<button type="button" class="danger" id="confirmDelete">Evet, sil</button>
-</div>
-</div>
-</div>
+    <label for="date">Tarih</label>
+    <input id="date" type="date">
 
-<nav>
-<button data-page="home">Ana Sayfa</button>
-<button data-page="transactions">İşlemler</button>
-<button data-page="settings">Ayarlar</button>
-</nav>
+    <label for="description">Açıklama (isteğe bağlı)</label>
+    <input id="description" type="text" maxlength="100"
+           placeholder="Örnek: Ekim ayı maaşı">
+
+    <button id="addButton" style="margin-top:16px">
+      Kaydı Ekle
+    </button>
+  </div>
+
+  <div class="card">
+    <h2>Aylık Özet</h2>
+    <label for="reportMonth">Ay seç</label>
+    <input id="reportMonth" type="month">
+
+    <div class="summary-row">
+      <span>Toplam gelir</span>
+      <strong class="green" id="reportIncome">0 TL</strong>
+    </div>
+    <div class="summary-row">
+      <span>Toplam gider</span>
+      <strong class="red" id="reportExpense">0 TL</strong>
+    </div>
+    <div class="summary-row">
+      <span>Ay içindeki net fark</span>
+      <strong id="reportNet">0 TL</strong>
+    </div>
+    <div class="note" style="margin-top:10px">
+      Aylık özetler, euro kayıtları dahil TL karşılığı üzerinden hesaplanır.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>📅 Aylık Giderler</h2>
+    <div class="note" style="margin-bottom:12px">
+      Her ay ayrı bir kutuda gösterilir.
+    </div>
+    <div id="monthlyExpenses"></div>
+  </div>
+
+  <div class="card">
+    <h2>Son İşlemler</h2>
+    <div id="transactions"></div>
+  </div>
+
+  <div class="card">
+    <h2>Verilerim</h2>
+    <p class="note">
+      Kayıtların bu cihazın tarayıcı depolamasında saklanır.
+      Uygulamayı silmek veya uygulama verilerini temizlemek
+      kayıtların kaybolmasına neden olabilir.
+    </p>
+    <div class="button-row">
+      <button class="secondary" id="exportButton">Yedek Al</button>
+      <button class="secondary" id="importButton">Yedek Yükle</button>
+    </div>
+    <input id="backupFile" type="file" accept=".json,application/json"
+           style="display:none">
+  </div>
+
+</div>
 
 <script>
-(function(){
 "use strict";
-const $=id=>document.getElementById(id);
-const KEY="paraTakipRecordsV1";
-const RATE="paraTakipEurRateV1";
-const BUDGET="paraTakipMonthlyBudgetV1";
-let records=[];
-let rate=55;
-let budget=0;
-let pendingDelete=null;
-let selectedMonth=null;
 
-function today(){
- const d=new Date();
- return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-function currentMonth(){return today().slice(0,7)}
-function money(n,c="TRY"){
- return new Intl.NumberFormat("tr-TR",{style:"currency",currency:c,minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(n)||0);
-}
-function esc(s){
- return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function normalize(r){
- return {
-  ...r,
-  id:String(r.id||("id_"+Date.now()+"_"+Math.random().toString(36).slice(2))),
-  type:r.type==="income"?"income":"expense",
-  amount:Number(r.amount)||0,
-  currency:r.currency==="EUR"?"EUR":"TRY",
-  category:String(r.category||"Diğer"),
-  date:/^\d{4}-\d{2}-\d{2}$/.test(r.date||"")?r.date:today(),
-  note:String(r.note||"")
- };
-}
-function load(){
- try{
-  const data=JSON.parse(localStorage.getItem(KEY)||"[]");
-  records=Array.isArray(data)?data.filter(r=>r&&typeof r==="object").map(normalize):[];
- }catch(e){
-  records=[];
-  alert("Kayıtlar okunamadı. Yedeğin varsa geri yükleyebilirsin.");
- }
-}
-function save(){
- try{
-  localStorage.setItem(KEY,JSON.stringify(records));
-  return true;
- }catch(e){
-  alert("Kayıt kaydedilemedi. Depolama alanını kontrol et.");
-  return false;
- }
-}
-function tl(r){return r.currency==="EUR"?r.amount*rate:r.amount}
-function sum(list,type){return list.filter(r=>r.type===type).reduce((s,r)=>s+tl(r),0)}
-function euroBalance(){
- return records.filter(r=>r.currency==="EUR").reduce((s,r)=>s+(r.type==="income"?r.amount:-r.amount),0);
-}
-function monthRecords(m){return records.filter(r=>(r.date||"").slice(0,7)===m)}
-function monthName(m){
- const parts=m.split("-").map(Number);
- return new Date(parts[0],parts[1]-1,1).toLocaleDateString("tr-TR",{month:"long",year:"numeric"});
-}
-function txHtml(r){
- const income=r.type==="income";
- return `<div class="tx">
- <div class="txinfo"><strong>${esc(r.category)}</strong>
- <small>${esc(r.date)}${r.note?" · "+esc(r.note):""}</small></div>
- <div class="txright">
- <strong class="${income?"green":"red"}">${income?"+":"−"}${money(r.amount,r.currency)}</strong>
- <small class="muted">${money(tl(r))}</small>
- <br><button type="button" class="danger" data-delete="${esc(r.id)}">Sil</button>
- </div></div>`;
-}
-function sorted(list){
- return [...list].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
-}
-function renderList(list){
- return list.length?sorted(list).map(txHtml).join(""):'<div class="empty">Henüz işlem yok.</div>';
-}
-function renderHome(){
- const balance=records.reduce((s,r)=>s+(r.type==="income"?tl(r):-tl(r)),0);
- const m=monthRecords(currentMonth());
- const inc=sum(m,"income"),exp=sum(m,"expense");
- $("balance").textContent=money(balance);
- $("euroBalance").textContent=money(euroBalance(),"EUR");
- $("income").textContent=money(inc);
- $("expense").textContent=money(exp);
- $("recent").innerHTML=records.length?sorted(records).slice(0,5).map(txHtml).join(""):'<div class="empty">Henüz işlem yok.</div>';
- $("budgetText").textContent=budget>0?"Harcanan: "+money(exp)+" / "+money(budget):"Bütçe belirlenmedi.";
- $("progress").style.width=(budget>0?Math.min(100,exp/budget*100):0)+"%";
- $("progress").style.background=budget>0&&exp>budget?"#ff7082":"#45d6a0";
-}
-function renderMonths(){
- const months=[...new Set(records.map(r=>(r.date||"").slice(0,7)).filter(m=>/^\d{4}-\d{2}$/.test(m)))];
- if(!months.includes(currentMonth()))months.push(currentMonth());
- months.sort((a,b)=>b.localeCompare(a));
- $("months").innerHTML=months.map(m=>{
-  const list=monthRecords(m);
-  const inc=sum(list,"income"),exp=sum(list,"expense");
-  return `<div class="monthbox">
-  <div class="monthtop"><strong>${esc(monthName(m))}</strong><span class="muted">${list.length} işlem</span></div>
-  <div class="grid">
-  <div><div class="label">Gelir</div><div class="amount green">${money(inc)}</div></div>
-  <div><div class="label">Gider</div><div class="amount red">${money(exp)}</div></div>
-  <div style="grid-column:1/-1"><div class="label">Net fark</div><div class="amount ${inc-exp>=0?"green":"red"}">${money(inc-exp)}</div></div>
-  </div>
-  <button type="button" class="secondary" data-month="${m}">Bu ayın işlemlerini gör</button>
-  </div>`;
- }).join("");
-}
-function openMonth(m){
- selectedMonth=m;
- const list=sorted(monthRecords(m));
- const inc=sum(list,"income"),exp=sum(list,"expense");
- $("detailTitle").textContent=monthName(m);
- $("detailSummary").innerHTML=`<div class="grid">
- <div><div class="label">Gelir</div><div class="amount green">${money(inc)}</div></div>
- <div><div class="label">Gider</div><div class="amount red">${money(exp)}</div></div>
- <div style="grid-column:1/-1"><div class="label">Net fark</div><div class="amount ${inc-exp>=0?"green":"red"}">${money(inc-exp)}</div></div>
- </div>`;
- $("detailList").innerHTML=renderList(list);
- $("monthDetails").style.display="block";
- $("monthDetails").scrollIntoView({behavior:"smooth",block:"start"});
-}
-function renderHistory(){
- const f=$("filter").value;
- $("history").innerHTML=renderList(records.filter(r=>f==="all"||r.type===f));
-}
-function render(){
- renderHome();
- renderMonths();
- renderHistory();
- if(selectedMonth&&$("monthDetails").style.display!=="none")openMonth(selectedMonth);
-}
-function showPage(id){
- document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
- window.scrollTo(0,0);
-}
-document.querySelectorAll("[data-page]").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
-$("date").value=today();
+const STORAGE_KEY = "paraTakip_v3";
+const EURO_RATE = 55;
 
-$("txForm").addEventListener("submit",e=>{
- e.preventDefault();
- const amount=Number($("amount").value);
- if(!Number.isFinite(amount)||amount<=0){alert("Geçerli bir tutar gir.");return;}
- records.unshift(normalize({
-  id:"id_"+Date.now()+"_"+Math.random().toString(36).slice(2),
-  type:$("type").value,
-  currency:$("currency").value,
-  amount,
-  category:$("category").value,
-  date:$("date").value||today(),
-  note:$("note").value.trim()
- }));
- if(save()){
-  $("amount").value="";
-  $("note").value="";
-  $("date").value=today();
-  render();
-  alert("İşlem kaydedildi.");
- }
-});
+const categories = {
+  income: ["Maaş", "Destek", "Hediye"],
+  expense: [
+    "Kira",
+    "Faturalar",
+    "Market",
+    "Ulaşım",
+    "Yemek",
+    "Sağlık",
+    "Sigara",
+    "Borç",
+    "Eğlence",
+    "Diğer"
+  ]
+};
 
-/* Sil butonu: tarayıcı confirm penceresi kullanmaz. */
-document.addEventListener("click",e=>{
- const del=e.target.closest("[data-delete]");
- if(del){
-  e.preventDefault();
-  pendingDelete=del.getAttribute("data-delete");
-  $("deleteOverlay").style.display="flex";
-  return;
- }
- const monthButton=e.target.closest("[data-month]");
- if(monthButton)openMonth(monthButton.getAttribute("data-month"));
-});
-$("cancelDelete").addEventListener("click",()=>{
- pendingDelete=null;
- $("deleteOverlay").style.display="none";
-});
-$("confirmDelete").addEventListener("click",()=>{
- if(pendingDelete===null)return;
- const old=records;
- const id=pendingDelete;
- const next=records.filter(r=>String(r.id)!==String(id));
- if(next.length===records.length){
-  $("deleteOverlay").style.display="none";
-  pendingDelete=null;
-  alert("İşlem bulunamadı. Sayfayı yenileyip tekrar dene.");
-  return;
- }
- records=next;
- if(save()){
-  if(selectedMonth&& !monthRecords(selectedMonth).length){
-   $("monthDetails").style.display="none";
-   selectedMonth=null;
+const $ = id => document.getElementById(id);
+
+let transactions = loadTransactions();
+
+function loadTransactions() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return [];
+
+    const parsed = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter(t =>
+      t &&
+      typeof t.id === "string" &&
+      ["income", "expense"].includes(t.type) &&
+      typeof t.amount === "number" &&
+      Number.isFinite(t.amount) &&
+      t.amount > 0 &&
+      ["TRY", "EUR"].includes(t.currency) &&
+      typeof t.date === "string" &&
+      /^\d{4}-\d{2}-\d{2}$/.test(t.date) &&
+      typeof t.category === "string"
+    );
+  } catch (error) {
+    return [];
   }
+}
+
+function saveTransactions() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
+    return true;
+  } catch (error) {
+    alert("Veriler kaydedilemedi. Cihazında depolama alanını kontrol et.");
+    return false;
+  }
+}
+
+function money(amount, currency = "TRY") {
+  return new Intl.NumberFormat("tr-TR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(amount) + (currency === "EUR" ? " €" : " TL");
+}
+
+function toTL(t) {
+  return t.amount * (t.currency === "EUR" ? EURO_RATE : 1);
+}
+
+function formatDate(date) {
+  const parts = date.split("-");
+  return parts.length === 3
+    ? parts[2] + "." + parts[1] + "." + parts[0]
+    : date;
+}
+
+function monthName(month) {
+  const parts = month.split("-");
+  const date = new Date(Number(parts[0]), Number(parts[1]) - 1, 1);
+  return new Intl.DateTimeFormat("tr-TR", {
+    month: "long",
+    year: "numeric"
+  }).format(date);
+}
+
+function currentMonth() {
+  return $("date").value.slice(0, 7);
+}
+
+function updateCategories() {
+  const type = $("type").value;
+  const select = $("category");
+  select.replaceChildren();
+
+  categories[type].forEach(category => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    select.appendChild(option);
+  });
+}
+
+function addTransaction() {
+  const type = $("type").value;
+  const amount = Number($("amount").value);
+  const date = $("date").value;
+  const category = $("category").value;
+  const currency = $("currency").value;
+  const description = $("description").value.trim();
+
+  if (!Number.isFinite(amount) || amount <= 0) {
+    alert("Lütfen sıfırdan büyük geçerli bir tutar gir.");
+    return;
+  }
+
+  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    alert("Lütfen geçerli bir tarih seç.");
+    return;
+  }
+
+  if (!categories[type].includes(category)) {
+    alert("Lütfen geçerli bir kategori seç.");
+    return;
+  }
+
+  const transaction = {
+    id: makeId(),
+    type,
+    amount,
+    currency,
+    date,
+    category,
+    description
+  };
+
+  transactions.unshift(transaction);
+
+  if (!saveTransactions()) {
+    transactions.shift();
+    return;
+  }
+
+  $("amount").value = "";
+  $("description").value = "";
+
   render();
-  $("deleteOverlay").style.display="none";
-  pendingDelete=null;
- }else{
-  records=old;
+}
+
+function makeId() {
+  return Date.now().toString(36) +
+    Math.random().toString(36).slice(2, 10);
+}
+
+function deleteTransaction(id) {
+  const transaction = transactions.find(t => t.id === id);
+  if (!transaction) {
+    alert("Kayıt bulunamadı.");
+    return;
+  }
+
+  if (!confirm(
+    transaction.category + " kaydını silmek istediğine emin misin?"
+  )) return;
+
+  const previous = transactions;
+  transactions = transactions.filter(t => t.id !== id);
+
+  if (!saveTransactions()) {
+    transactions = previous;
+    return;
+  }
+
   render();
- }
-});
-$("deleteOverlay").addEventListener("click",e=>{
- if(e.target===$("deleteOverlay")){
-  pendingDelete=null;
-  $("deleteOverlay").style.display="none";
- }
+}
+
+function updateBalances() {
+  let tl = 0;
+  let eur = 0;
+
+  transactions.forEach(t => {
+    const sign = t.type === "income" ? 1 : -1;
+    if (t.currency === "TRY") {
+      tl += sign * t.amount;
+    } else {
+      eur += sign * t.amount;
+    }
+  });
+
+  $("tlBalance").textContent = money(tl);
+  $("eurBalance").textContent = money(eur, "EUR");
+  $("totalBalance").textContent = money(tl + eur * EURO_RATE);
+}
+
+function updateReport() {
+  const month = $("reportMonth").value;
+
+  const items = transactions.filter(t => t.date.startsWith(month));
+
+  let income = 0;
+  let expense = 0;
+
+  items.forEach(t => {
+    if (t.type === "income") income += toTL(t);
+    else expense += toTL(t);
+  });
+
+  const net = income - expense;
+
+  $("reportIncome").textContent = money(income);
+  $("reportExpense").textContent = money(expense);
+  $("reportNet").textContent = money(net);
+  $("reportNet").className = net >= 0 ? "green" : "red";
+}
+
+function createElement(tag, className, text) {
+  const element = document.createElement(tag);
+  if (className) element.className = className;
+  if (text !== undefined) element.textContent = text;
+  return element;
+}
+
+function renderTransactions() {
+  const root = $("transactions");
+  root.replaceChildren();
+
+  if (transactions.length === 0) {
+    root.appendChild(createElement("div", "empty", "Henüz kayıt eklenmedi."));
+    return;
+  }
+
+  transactions.forEach(t => {
+    const box = createElement("div", "transaction");
+    const top = createElement("div", "transaction-top");
+    const left = document.createElement("div");
+    const right = document.createElement("div");
+
+    left.appendChild(createElement("div", "transaction-name", t.category));
+    left.appendChild(createElement(
+      "div",
+      "transaction-info",
+      formatDate(t.date) + " · " +
+      (t.type === "income" ? "Gelir" : "Gider")
+    ));
+
+    if (t.description) {
+      left.appendChild(createElement(
+        "div", "transaction-info", t.description
+      ));
+    }
+
+    const amountText = (t.type === "income" ? "+" : "−") +
+      money(t.amount, t.currency);
+
+    right.appendChild(createElement(
+      "strong",
+      t.type === "income" ? "green" : "red",
+      amountText
+    ));
+
+    top.append(left, right);
+    box.appendChild(top);
+
+    const actions = createElement("div", "transaction-actions");
+    const deleteButton = createElement("button", "danger small-button", "Sil");
+
+    deleteButton.type = "button";
+    deleteButton.addEventListener("click", () => deleteTransaction(t.id));
+
+    actions.appendChild(deleteButton);
+    box.appendChild(actions);
+    root.appendChild(box);
+  });
+}
+
+function renderMonthlyExpenses() {
+  const root = $("monthlyExpenses");
+  root.replaceChildren();
+
+  const expenses = transactions.filter(t => t.type === "expense");
+
+  if (expenses.length === 0) {
+    root.appendChild(createElement(
+      "div", "empty", "Henüz gider kaydı yok."
+    ));
+    return;
+  }
+
+  const months = [...new Set(expenses.map(t => t.date.slice(0, 7)))]
+    .sort()
+    .reverse();
+
+  months.forEach(month => {
+    const items = expenses
+      .filter(t => t.date.startsWith(month))
+      .sort((a, b) => b.date.localeCompare(a.date));
+
+    const total = items.reduce((sum, t) => sum + toTL(t), 0);
+
+    const box = createElement("div", "month-box");
+    box.appendChild(createElement("div", "month-title", monthName(month)));
+
+    const stats = createElement("div", "month-stats");
+    const totalBox = createElement("div", "month-stat");
+    totalBox.appendChild(createElement("small", "", "Toplam gider"));
+    totalBox.appendChild(createElement("strong", "red", money(total)));
+
+    const countBox = createElement("div", "month-stat");
+    countBox.appendChild(createElement("small", "", "Gider sayısı"));
+    countBox.appendChild(createElement("strong", "", String(items.length)));
+
+    stats.append(totalBox, countBox);
+    box.appendChild(stats);
+
+    items.forEach(t => {
+      const row = createElement("div", "transaction");
+      const top = createElement("div", "transaction-top");
+      const left = createElement("div");
+      const right = createElement("div");
+
+      left.appendChild(createElement("div", "transaction-name", t.category));
+      left.appendChild(createElement(
+        "div", "transaction-info", formatDate(t.date)
+      ));
+
+      if (t.description) {
+        left.appendChild(createElement(
+          "div", "transaction-info", t.description
+        ));
+      }
+
+      right.appendChild(createElement(
+        "strong", "red", "−" + money(t.amount, t.currency)
+      ));
+
+      top.append(left, right);
+      row.appendChild(top);
+
+      const actions = createElement("div", "transaction-actions");
+      const deleteButton = createElement("button", "danger small-button", "Sil");
+      deleteButton.type = "button";
+      deleteButton.addEventListener("click", () => deleteTransaction(t.id));
+      actions.appendChild(deleteButton);
+
+      row.appendChild(actions);
+      box.appendChild(row);
+    });
+
+    root.appendChild(box);
+  });
+}
+
+function render() {
+  updateBalances();
+  updateReport();
+  renderTransactions();
+  renderMonthlyExpenses();
+}
+
+function exportBackup() {
+  const data = {
+    app: "Para Takip",
+    version: 3,
+    exportedAt: new Date().toISOString(),
+    transactions
+  };
+
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "para-takip-yedek.json";
+  link.click();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function importBackup(file) {
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = () => {
+    try {
+      const parsed = JSON.parse(reader.result);
+      const list = Array.isArray(parsed) ? parsed : parsed.transactions;
+
+      if (!Array.isArray(list)) {
+        throw new Error("Geçersiz yedek dosyası");
+      }
+
+      const valid = list.every(t =>
+        t &&
+        typeof t.id === "string" &&
+        ["income", "expense"].includes(t.type) &&
+        typeof t.amount === "number" &&
+        Number.isFinite(t.amount) &&
+        t.amount > 0 &&
+        ["TRY", "EUR"].includes(t.currency) &&
+        typeof t.date === "string" &&
+        /^\d{4}-\d{2}-\d{2}$/.test(t.date) &&
+        typeof t.category === "string" &&
+        categories[t.type].includes(t.category) &&
+        (t.description === undefined || typeof t.description === "string")
+      );
+
+      if (!valid) {
+        throw new Error("Yedekte geçersiz kayıtlar var");
+      }
+
+      if (!confirm(
+        "Mevcut kayıtların yerine yedekteki " + list.length +
+        " kayıt yüklenecek. Devam edilsin mi?"
+      )) return;
+
+      const old = transactions;
+      transactions = list.map(t => ({
+        id: t.id,
+        type: t.type,
+        amount: t.amount,
+        currency: t.currency,
+        date: t.date,
+        category: t.category,
+        description: t.description || ""
+      }));
+
+      if (!saveTransactions()) {
+        transactions = old;
+        return;
+      }
+
+      render();
+      alert("Yedek başarıyla yüklendi.");
+    } catch (error) {
+      alert("Yedek yüklenemedi. Dosyanın doğru olduğundan emin ol.");
+    } finally {
+      $("backupFile").value = "";
+    }
+  };
+
+  reader.onerror = () => {
+    alert("Dosya okunamadı.");
+    $("backupFile").value = "";
+  };
+
+  reader.readAsText(file);
+}
+
+$("type").addEventListener("change", updateCategories);
+$("addButton").addEventListener("click", addTransaction);
+$("reportMonth").addEventListener("change", updateReport);
+$("exportButton").addEventListener("click", exportBackup);
+$("importButton").addEventListener("click", () => $("backupFile").click());
+$("backupFile").addEventListener("change", event => {
+  importBackup(event.target.files[0]);
 });
 
-$("closeDetails").addEventListener("click",()=>{
- $("monthDetails").style.display="none";
- selectedMonth=null;
-});
-$("filter").addEventListener("change",renderHistory);
+const today = new Date();
+const todayString = [
+  today.getFullYear(),
+  String(today.getMonth() + 1).padStart(2, "0"),
+  String(today.getDate()).padStart(2, "0")
+].join("-");
 
-$("saveRate").addEventListener("click",()=>{
- const v=Number($("rate").value);
- if(!Number.isFinite(v)||v<=0){alert("Geçerli bir euro kuru gir.");return;}
- try{
-  localStorage.setItem(RATE,String(v));
-  rate=v;
-  render();
-  alert("Euro kuru kaydedildi.");
- }catch(e){alert("Kur kaydedilemedi.");}
-});
-$("saveBudget").addEventListener("click",()=>{
- const v=Number($("budget").value);
- if(!Number.isFinite(v)||v<0){alert("Geçerli bir bütçe gir.");return;}
- try{
-  localStorage.setItem(BUDGET,String(v));
-  budget=v;
-  render();
-  alert("Bütçe kaydedildi.");
- }catch(e){alert("Bütçe kaydedilemedi.");}
-});
-$("backup").addEventListener("click",()=>{
- $("backupData").value=JSON.stringify({records,rate,budget},null,2);
-});
-$("restore").addEventListener("click",()=>{
- let data;
- try{data=JSON.parse($("backupData").value);}
- catch(e){alert("Yedek JSON formatında değil.");return;}
- if(!data||!Array.isArray(data.records)){alert("Yedekte işlem listesi bulunamadı.");return;}
- if(!confirm("Mevcut kayıtların yerine yedek yüklenecek. Devam edilsin mi?"))return;
- const oldRecords=records,oldRate=rate,oldBudget=budget;
- records=data.records.filter(r=>r&&typeof r==="object").map(normalize);
- if(Number(data.rate)>0)rate=Number(data.rate);
- if(Number(data.budget)>=0)budget=Number(data.budget);
- try{
-  localStorage.setItem(KEY,JSON.stringify(records));
-  localStorage.setItem(RATE,String(rate));
-  localStorage.setItem(BUDGET,String(budget));
-  $("rate").value=rate;
-  $("budget").value=budget||"";
-  selectedMonth=null;
-  $("monthDetails").style.display="none";
-  render();
-  alert("Yedek geri yüklendi.");
- }catch(e){
-  records=oldRecords;rate=oldRate;budget=oldBudget;
-  render();
-  alert("Yedek yüklenemedi.");
- }
-});
+$("date").value = todayString;
+$("reportMonth").value = todayString.slice(0, 7);
 
-try{
- const r=Number(localStorage.getItem(RATE));
- if(r>0)rate=r;
- const b=localStorage.getItem(BUDGET);
- if(b!==null&&Number(b)>=0)budget=Number(b);
-}catch(e){}
-$("rate").value=rate;
-$("budget").value=budget||"";
-load();
+updateCategories();
 render();
-})();
 </script>
 </body>
 </html>
