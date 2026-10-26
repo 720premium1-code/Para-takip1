@@ -638,39 +638,81 @@ $("transactionForm").addEventListener("submit",event=>{
   alert("İşlem kaydedildi.");
 });
 
-/*
-  Silme olayı document üzerinde bir kez dinlenir.
-  Böylece liste tekrar çizildiğinde de çalışmaya devam eder.
-  ID karşılaştırması hem eski sayı ID'lerini hem metin ID'lerini destekler.
-*/
+/* Android WebView için özel silme penceresi */
+function closeDeleteDialog(){
+  const overlay=document.getElementById("deleteConfirmOverlay");
+  if(overlay)overlay.remove();
+}
+
+function showDeleteDialog(id){
+  closeDeleteDialog();
+
+  const overlay=document.createElement("div");
+  overlay.id="deleteConfirmOverlay";
+  overlay.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:20px;";
+
+  overlay.innerHTML=`
+    <div role="dialog" aria-modal="true" style="width:100%;max-width:360px;background:#1b2030;color:#f4f6fc;border:1px solid #343b50;border-radius:16px;padding:20px;box-shadow:0 12px 40px #0008;">
+      <h2 style="margin:0 0 10px;font-size:19px;">İşlem silinsin mi?</h2>
+      <p style="color:#9ba5ba;line-height:1.5;">Bu işlem kayıtlarından kaldırılacak.</p>
+      <div style="display:flex;gap:10px;margin-top:18px;">
+        <button type="button" data-delete-cancel style="flex:1;background:#252c3e;color:#f4f6fc;border:1px solid #343b50;border-radius:10px;padding:12px;">Vazgeç</button>
+        <button type="button" data-delete-confirm style="flex:1;background:#713847;color:#fff;border:1px solid #fb7185;border-radius:10px;padding:12px;font-weight:bold;">Evet, sil</button>
+      </div>
+    </div>`;
+
+  overlay.addEventListener("click",event=>{
+    if(event.target===overlay||event.target.closest("[data-delete-cancel]")){
+      closeDeleteDialog();
+      return;
+    }
+
+    if(!event.target.closest("[data-delete-confirm]"))return;
+
+    const index=items.findIndex(item=>String(item.id)===String(id));
+
+    if(index===-1){
+      closeDeleteDialog();
+      render();
+      alert("İşlem bulunamadı. Liste yenilendi.");
+      return;
+    }
+
+    const previousItems=items.slice();
+    items.splice(index,1);
+
+    if(!saveItems()){
+      items=previousItems;
+      closeDeleteDialog();
+      render();
+      return;
+    }
+
+    closeDeleteDialog();
+    render();
+  });
+
+  document.body.appendChild(overlay);
+}
+
 document.addEventListener("click",event=>{
-  const button=event.target.closest("button[data-delete-id]");
+  const target=event.target;
+  if(!target||typeof target.closest!=="function")return;
+
+  const button=target.closest("button[data-delete-id]");
   if(!button)return;
 
   event.preventDefault();
   event.stopPropagation();
 
-  const id=String(button.getAttribute("data-delete-id"));
-  const index=items.findIndex(item=>String(item.id)===id);
+  const id=button.getAttribute("data-delete-id");
 
-  if(index===-1){
-    alert("Bu işlem bulunamadı. Sayfayı yenileyip tekrar dene.");
-    render();
+  if(id===null||id===""){
+    alert("İşlem numarası bulunamadı.");
     return;
   }
 
-  if(!confirm("Bu işlemi silmek istediğine emin misin?"))return;
-
-  const previousItems=items.slice();
-  items.splice(index,1);
-
-  if(!saveItems()){
-    items=previousItems;
-    render();
-    return;
-  }
-
-  render();
+  showDeleteDialog(id);
 });
 
 /* Monthly report selection */
@@ -759,6 +801,7 @@ $("importFile").addEventListener("change",async event=>{
       render();
       return;
     }
+
     if(!saveRates()){
       items=oldItems;
       rates=oldRates;
@@ -789,15 +832,18 @@ $("resetAll").addEventListener("click",()=>{
     items=oldItems;
     return;
   }
+
   render();
   alert("Tüm işlemler silindi.");
 });
 
 /* Initial setup */
 loadData();
+
 $("today").textContent=new Date().toLocaleDateString("tr-TR",{
   weekday:"long",day:"numeric",month:"long",year:"numeric"
 });
+
 $("txDate").value=today();
 setType("income");
 render();
