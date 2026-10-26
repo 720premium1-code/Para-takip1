@@ -17,6 +17,7 @@ h1{font-size:28px;margin:8px 0}
 .balance{grid-column:1/-1;border:1px solid #343c51}
 .label{font-size:13px;color:var(--muted);margin-bottom:10px}
 .amount{font-size:21px;font-weight:700;overflow-wrap:anywhere}
+.subamount{font-size:14px;color:var(--muted);margin-top:7px}
 .green{color:var(--green)}.red{color:var(--red)}
 h2{font-size:19px;margin:26px 0 14px}
 .panel{background:var(--card);border-radius:15px;padding:16px}
@@ -34,8 +35,8 @@ button:active{opacity:.8}
 .entry-info{flex:1;min-width:0}
 .entry-title{font-weight:700;overflow-wrap:anywhere}
 .entry-meta{font-size:12px;color:var(--muted);margin-top:5px;overflow-wrap:anywhere}
-.entry-right{text-align:right}
-.entry-amount{font-weight:700;white-space:nowrap;margin-bottom:8px}
+.entry-right{text-align:right;min-width:90px}
+.entry-amount{font-weight:700;overflow-wrap:anywhere;margin-bottom:8px}
 .del{width:auto;margin:0;padding:5px 8px;background:#34303a;color:#ffadb5;font-size:12px}
 .empty{text-align:center;color:var(--muted);padding:25px 8px}
 .notice{color:var(--muted);font-size:12px;line-height:1.5;margin-top:18px}
@@ -50,14 +51,17 @@ button:active{opacity:.8}
     <div class="card balance">
       <div class="label">Toplam bakiye</div>
       <div class="amount" id="balance">0,00 ₺</div>
+      <div class="subamount" id="balanceEuro">0,00 € karşılığı</div>
     </div>
     <div class="card">
       <div class="label">Toplam gelir</div>
       <div class="amount green" id="totalIncome">0,00 ₺</div>
+      <div class="subamount" id="incomeEuro">0,00 € karşılığı</div>
     </div>
     <div class="card">
       <div class="label">Toplam gider</div>
       <div class="amount red" id="totalExpense">0,00 ₺</div>
+      <div class="subamount" id="expenseEuro">0,00 € karşılığı</div>
     </div>
   </section>
 
@@ -68,8 +72,18 @@ button:active{opacity:.8}
       <button type="button" id="expenseTab">Gider</button>
     </div>
 
-    <label class="label" for="amount">Tutar (₺)</label>
+    <label class="label" for="currency">Para birimi</label>
+    <select id="currency">
+      <option value="TRY">Türk lirası (₺)</option>
+      <option value="EUR">Euro (€)</option>
+    </select>
+
+    <label class="label" for="amount" id="amountLabel">Tutar (₺)</label>
     <input id="amount" type="number" min="0.01" max="1000000000" step="0.01" placeholder="Örn. 500" inputmode="decimal" required>
+
+    <p class="notice" style="margin:0 0 12px">
+      Sabit kur: 1 € = 55 ₺. Bakiye ve toplamlar TL karşılığıyla hesaplanır.
+    </p>
 
     <label class="label" for="category">Kategori</label>
     <select id="category" required></select>
@@ -85,12 +99,15 @@ button:active{opacity:.8}
       </div>
     </div>
 
-    <button type="submit" id="save">İşlemi kaydet</button>
+    <button type="submit" id="save">Geliri kaydet</button>
   </form>
 
   <h2>İşlem geçmişi</h2>
   <div id="history"></div>
-  <p class="notice">Kayıtların bu cihazda saklanır. Uygulama verilerini silersen veya uygulamayı kaldırırsan kayıtlar kaybolabilir. Önemli kayıtlarını ayrıca yedekle.</p>
+
+  <p class="notice">
+    Kayıtların bu cihazda saklanır. Uygulama verilerini silersen veya uygulamayı kaldırırsan kayıtlar kaybolabilir. Önemli kayıtlarını ayrıca yedekle.
+  </p>
 </main>
 
 <script>
@@ -99,11 +116,14 @@ button:active{opacity:.8}
 
   var type = "income";
   var storageKey = "paraTakipRecordsV1";
+  var EUR_RATE = 55;
+
   var incomeCategories = ["Maaş","Ek gelir","Satış","İade","Diğer"];
   var expenseCategories = ["Yemek","Ulaşım","Kira","Fatura","Alışveriş","Eğlence","Sağlık","Borç ödemesi","Diğer"];
 
   var form = document.getElementById("form");
   var amountInput = document.getElementById("amount");
+  var currencyInput = document.getElementById("currency");
   var categoryInput = document.getElementById("category");
   var dateInput = document.getElementById("date");
   var noteInput = document.getElementById("note");
@@ -120,10 +140,13 @@ button:active{opacity:.8}
     try {
       var data = JSON.parse(localStorage.getItem(storageKey) || "[]");
       if (!Array.isArray(data)) return [];
+
       return data.filter(function(r){
-        return r && typeof r.id === "string" &&
+        return r &&
+          typeof r.id === "string" &&
           (r.type === "income" || r.type === "expense") &&
-          Number.isFinite(r.amount) && r.amount > 0 &&
+          Number.isFinite(r.amount) &&
+          r.amount > 0 &&
           typeof r.category === "string";
       });
     } catch(e) {
@@ -143,17 +166,34 @@ button:active{opacity:.8}
     }
   }
 
+  function formatAmount(n, currency){
+    return Number(n).toLocaleString("tr-TR", {
+      minimumFractionDigits:2,
+      maximumFractionDigits:2
+    }) + (currency === "EUR" ? " €" : " ₺");
+  }
+
   function money(n){
-    return n.toLocaleString("tr-TR",{minimumFractionDigits:2,maximumFractionDigits:2})+" ₺";
+    return formatAmount(n, "TRY");
+  }
+
+  function getTLAmount(r){
+    if (Number.isFinite(r.tlAmount)) return r.tlAmount;
+
+    // Eski sürümdeki kayıtlar TL olarak kabul edilir.
+    return r.amount;
   }
 
   function setType(next){
     type = next;
     var inc = type === "income";
+
     document.getElementById("incomeTab").className = inc ? "active income" : "";
     document.getElementById("expenseTab").className = !inc ? "active expense" : "";
     document.getElementById("save").textContent = inc ? "Geliri kaydet" : "Gideri kaydet";
+
     categoryInput.innerHTML = "";
+
     (inc ? incomeCategories : expenseCategories).forEach(function(c){
       var option = document.createElement("option");
       option.value = c;
@@ -162,19 +202,42 @@ button:active{opacity:.8}
     });
   }
 
+  currencyInput.addEventListener("change", function(){
+    var isEuro = currencyInput.value === "EUR";
+    document.getElementById("amountLabel").textContent = isEuro ? "Tutar (€)" : "Tutar (₺)";
+    amountInput.placeholder = isEuro ? "Örn. 100" : "Örn. 500";
+  });
+
   function render(){
-    var income = 0, expense = 0;
+    var income = 0;
+    var expense = 0;
+
     records.forEach(function(r){
-      if(r.type === "income") income += r.amount;
-      else expense += r.amount;
+      var tl = getTLAmount(r);
+
+      if(r.type === "income") income += tl;
+      else expense += tl;
     });
 
-    document.getElementById("balance").textContent = money(income-expense);
-    document.getElementById("balance").className = "amount " + (income-expense < 0 ? "red" : "green");
+    var balanceTl = income - expense;
+
+    document.getElementById("balance").textContent = money(balanceTl);
+    document.getElementById("balance").className =
+      "amount " + (balanceTl < 0 ? "red" : "green");
+
+    document.getElementById("balanceEuro").textContent =
+      formatAmount(balanceTl / EUR_RATE, "EUR") + " karşılığı";
+
     document.getElementById("totalIncome").textContent = money(income);
+    document.getElementById("incomeEuro").textContent =
+      formatAmount(income / EUR_RATE, "EUR") + " karşılığı";
+
     document.getElementById("totalExpense").textContent = money(expense);
+    document.getElementById("expenseEuro").textContent =
+      formatAmount(expense / EUR_RATE, "EUR") + " karşılığı";
 
     history.innerHTML = "";
+
     var sorted = records.slice().sort(function(a,b){
       return b.date.localeCompare(a.date) || b.id.localeCompare(a.id);
     });
@@ -193,35 +256,59 @@ button:active{opacity:.8}
 
       var info = document.createElement("div");
       info.className = "entry-info";
+
       var title = document.createElement("div");
       title.className = "entry-title";
       title.textContent = r.category;
+
       var meta = document.createElement("div");
       meta.className = "entry-meta";
       meta.textContent = r.date + (r.note ? " · " + r.note : "");
+
       info.appendChild(title);
       info.appendChild(meta);
 
       var right = document.createElement("div");
       right.className = "entry-right";
+
       var value = document.createElement("div");
       value.className = "entry-amount " + (r.type === "income" ? "green" : "red");
-      value.textContent = (r.type === "income" ? "+" : "−") + money(r.amount);
+
+      var currency = r.currency === "EUR" ? "EUR" : "TRY";
+      var sign = r.type === "income" ? "+" : "−";
+      value.textContent = sign + formatAmount(r.amount, currency);
+
+      right.appendChild(value);
+
+      // Euro işlemlerinde TL karşılığını da göster.
+      if(currency === "EUR"){
+        var equivalent = document.createElement("div");
+        equivalent.className = "entry-meta";
+        equivalent.textContent = formatAmount(getTLAmount(r), "TRY");
+        right.appendChild(equivalent);
+      }
 
       var del = document.createElement("button");
       del.type = "button";
       del.className = "del";
       del.textContent = "Sil";
       del.setAttribute("aria-label", r.category + " işlemini sil");
+
       del.addEventListener("click", function(){
         if(!confirm("Bu işlemi silmek istediğine emin misin?")) return;
+
         var old = records;
-        records = records.filter(function(x){ return x.id !== r.id; });
-        if(saveRecords()) render();
-        else records = old;
+        records = records.filter(function(x){
+          return x.id !== r.id;
+        });
+
+        if(saveRecords()){
+          render();
+        } else {
+          records = old;
+        }
       });
 
-      right.appendChild(value);
       right.appendChild(del);
       entry.appendChild(info);
       entry.appendChild(right);
@@ -229,32 +316,48 @@ button:active{opacity:.8}
     });
   }
 
-  document.getElementById("incomeTab").addEventListener("click",function(){setType("income");});
-  document.getElementById("expenseTab").addEventListener("click",function(){setType("expense");});
+  document.getElementById("incomeTab").addEventListener("click", function(){
+    setType("income");
+  });
 
-  form.addEventListener("submit",function(e){
+  document.getElementById("expenseTab").addEventListener("click", function(){
+    setType("expense");
+  });
+
+  form.addEventListener("submit", function(e){
     e.preventDefault();
+
     var amount = Number(amountInput.value);
+    var currency = currencyInput.value;
 
     if(!Number.isFinite(amount) || amount <= 0 || amount > 1000000000){
       alert("Lütfen geçerli bir tutar gir.");
       return;
     }
+
     if(!dateInput.value){
       alert("Lütfen tarihi seç.");
       return;
     }
 
+    var roundedAmount = Math.round(amount * 100) / 100;
+    var tlAmount = currency === "EUR"
+      ? Math.round(roundedAmount * EUR_RATE * 100) / 100
+      : roundedAmount;
+
     var record = {
       id: String(Date.now()) + "-" + Math.random().toString(36).slice(2),
       type: type,
-      amount: Math.round(amount*100)/100,
+      amount: roundedAmount,
+      currency: currency,
+      tlAmount: tlAmount,
       category: categoryInput.value,
       date: dateInput.value,
       note: noteInput.value.trim()
     };
 
     records.unshift(record);
+
     if(!saveRecords()){
       records.shift();
       return;
@@ -262,6 +365,10 @@ button:active{opacity:.8}
 
     form.reset();
     dateInput.value = today();
+    currencyInput.value = "TRY";
+    document.getElementById("amountLabel").textContent = "Tutar (₺)";
+    amountInput.placeholder = "Örn. 500";
+
     setType(type);
     render();
   });
