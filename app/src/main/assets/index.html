@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -171,7 +170,6 @@ button:active { opacity: .8; }
       <h2>Aylık rapor</h2>
       <input id="reportMonth" type="month" aria-label="Rapor ayı">
     </div>
-
     <div class="report-cards">
       <div class="report-card">
         <div class="label">Aylık gelir</div>
@@ -190,17 +188,26 @@ button:active { opacity: .8; }
         <div class="amount" id="monthCount">0</div>
       </div>
     </div>
-
     <div class="panel" style="margin-top:12px">
       <div class="chart-title">📉 Gider kategorileri</div>
       <div id="expenseChart"></div>
       <div class="chart-title">📈 Gelir kategorileri</div>
       <div id="incomeChart"></div>
       <p class="notice">
-        Rapor, seçtiğin ayın işlemlerini gösterir. Euro işlemleri
-        1 € = 55 ₺ sabit kuruyla TL karşılığına çevrilir.
+        Rapor, seçtiğin ayın işlemlerini gösterir. Euro işlemleri güncel uygulama kuruyla TL karşılığına çevrilir.
       </p>
     </div>
+  </section>
+
+  <h2>Euro kur ayarı</h2>
+  <section class="panel">
+    <p class="notice" style="margin:0 0 12px">
+      Euro kurunu buradan değiştirebilirsin. Kaydettiğinde mevcut Euro kayıtlarının TL karşılıkları, bakiyeler ve raporlar güncellenir.
+    </p>
+    <label class="label" for="eurRateInput">1 Euro kaç TL?</label>
+    <input id="eurRateInput" type="number" min="0.01" max="1000000" step="0.01" inputmode="decimal" required>
+    <button type="button" id="saveRate">Euro kurunu kaydet</button>
+    <div class="notice" id="rateStatus" aria-live="polite" style="margin-top:0"></div>
   </section>
 
   <h2>Yeni işlem</h2>
@@ -221,7 +228,7 @@ button:active { opacity: .8; }
       step="0.01" placeholder="Örn. 500" inputmode="decimal" required>
 
     <p class="notice" style="margin:0 0 12px">
-      Sabit kur: 1 € = 55 ₺. Bakiye ve raporlar TL karşılığıyla hesaplanır.
+      Güncel kur: 1 € = <span id="currentRate">55</span> ₺. Bakiye ve raporlar TL karşılığıyla hesaplanır.
     </p>
 
     <label class="label" for="category">Kategori</label>
@@ -256,7 +263,15 @@ button:active { opacity: .8; }
 
   var type = "income";
   var storageKey = "paraTakipRecordsV1";
+  var rateStorageKey = "paraTakipEurRateV1";
   var EUR_RATE = 55;
+
+  try {
+    var savedRate = Number(localStorage.getItem(rateStorageKey));
+    if (Number.isFinite(savedRate) && savedRate > 0 && savedRate <= 1000000) {
+      EUR_RATE = savedRate;
+    }
+  } catch (e) {}
 
   var incomeCategories = ["Maaş", "Ek gelir", "Satış", "İade", "Diğer"];
   var expenseCategories = [
@@ -272,6 +287,9 @@ button:active { opacity: .8; }
   var noteInput = document.getElementById("note");
   var history = document.getElementById("history");
   var reportMonth = document.getElementById("reportMonth");
+  var eurRateInput = document.getElementById("eurRateInput");
+  var rateStatus = document.getElementById("rateStatus");
+  var currentRate = document.getElementById("currentRate");
 
   function today() {
     var d = new Date();
@@ -325,9 +343,43 @@ button:active { opacity: .8; }
   }
 
   function getTLAmount(r) {
+    if (r.currency === "EUR") {
+      return Math.round(r.amount * EUR_RATE * 100) / 100;
+    }
     if (Number.isFinite(r.tlAmount)) return r.tlAmount;
     return r.amount;
   }
+
+  function updateRateDisplay() {
+    eurRateInput.value = String(EUR_RATE);
+    currentRate.textContent = EUR_RATE.toLocaleString("tr-TR", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 4
+    });
+  }
+
+  document.getElementById("saveRate").addEventListener("click", function() {
+    var newRate = Number(eurRateInput.value);
+
+    if (!Number.isFinite(newRate) || newRate <= 0 || newRate > 1000000) {
+      rateStatus.textContent = "Lütfen 0,01 ile 1.000.000 arasında geçerli bir kur gir.";
+      return;
+    }
+
+    newRate = Math.round(newRate * 10000) / 10000;
+
+    try {
+      localStorage.setItem(rateStorageKey, String(newRate));
+    } catch (e) {
+      rateStatus.textContent = "Kur kaydedilemedi. Cihaz depolama alanını kontrol et.";
+      return;
+    }
+
+    EUR_RATE = newRate;
+    updateRateDisplay();
+    rateStatus.textContent = "Kur kaydedildi. Bakiye ve raporlar güncellendi.";
+    render();
+  });
 
   function setType(next) {
     type = next;
@@ -610,6 +662,7 @@ button:active { opacity: .8; }
   });
 
   setType("income");
+  updateRateDisplay();
   render();
 })();
 </script>
